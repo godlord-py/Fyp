@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    @apply h-full;
+  }
+
+
+  #root {
+    @apply h-full;
+  }
+}

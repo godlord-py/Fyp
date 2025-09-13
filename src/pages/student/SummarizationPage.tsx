@@ -1,0 +1,269 @@
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { SparklesIcon, DocumentTextIcon, PlusIcon } from "@heroicons/react/24/outline"
+import { SummaryCard } from "../../components/SummaryCard"
+import { mockSummaries } from "../../data/mockData"
+import type { Summary } from "../../types"
+
+export const SummarizationPage: React.FC = () => {
+  const [summaries, setSummaries] = useState<Summary[]>(mockSummaries)
+  const [bookmarkedSummaries, setBookmarkedSummaries] = useState<Set<string>>(new Set(["1"]))
+  const [inputText, setInputText] = useState("")
+  const [selectedSubject, setSelectedSubject] = useState("Physics")
+  const [detailLevel, setDetailLevel] = useState<"short" | "medium" | "detailed">("medium")
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [activeTab, setActiveTab] = useState<"generate" | "history">("generate")
+
+  const subjects = ["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"]
+
+  const handleGenerateSummary = async () => {
+    if (!inputText.trim()) return
+
+    setIsGenerating(true)
+
+    // Simulate AI processing
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    const newSummary: Summary = {
+      id: Date.now().toString(),
+      title: `${selectedSubject} Summary - ${new Date().toLocaleDateString()}`,
+      content: generateMockSummary(inputText, detailLevel),
+      subject: selectedSubject,
+      detailLevel,
+      createdAt: new Date().toISOString(),
+    }
+
+    setSummaries((prev) => [newSummary, ...prev])
+    setInputText("")
+    setIsGenerating(false)
+    setActiveTab("history")
+  }
+
+  const generateMockSummary = (input: string, level: "short" | "medium" | "detailed") => {
+    const baseContent = `This is an AI-generated summary of your ${selectedSubject} content. `
+
+    switch (level) {
+      case "short":
+        return (
+          baseContent +
+          "Key points: The main concepts covered include fundamental principles, important formulas, and practical applications. This summary provides a concise overview of the essential information."
+        )
+      case "medium":
+        return (
+          baseContent +
+          "Key points: The main concepts covered include fundamental principles, important formulas, and practical applications. This summary provides a balanced overview with detailed explanations of core concepts, relevant examples, and connections between different topics. The content is structured to facilitate understanding and retention of the material."
+        )
+      case "detailed":
+        return (
+          baseContent +
+          "Key points: The main concepts covered include fundamental principles, important formulas, and practical applications. This comprehensive summary provides in-depth explanations of all core concepts, detailed derivations of important formulas, multiple worked examples, and extensive connections between different topics. The content includes historical context, real-world applications, common misconceptions, and advanced topics for deeper understanding. This detailed analysis is designed to provide complete mastery of the subject matter."
+        )
+    }
+  }
+
+  const handleDeleteSummary = (id: string) => {
+    setSummaries((prev) => prev.filter((s) => s.id !== id))
+    setBookmarkedSummaries((prev) => {
+      const newSet = new Set(prev)
+      newSet.delete(id)
+      return newSet
+    })
+  }
+
+  const handleToggleBookmark = (id: string) => {
+    setBookmarkedSummaries((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) {
+        newSet.delete(id)
+      } else {
+        newSet.add(id)
+      }
+      return newSet
+    })
+  }
+
+  const filteredSummaries = summaries.filter((summary) =>
+    activeTab === "history" ? true : bookmarkedSummaries.has(summary.id),
+  )
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI Summarization</h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Generate intelligent summaries of your study materials with adjustable detail levels
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveTab("generate")}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "generate"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300"
+            }`}
+          >
+            <PlusIcon className="w-4 h-4 inline mr-2" />
+            Generate Summary
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "history"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300"
+            }`}
+          >
+            <DocumentTextIcon className="w-4 h-4 inline mr-2" />
+            My Summaries ({summaries.length})
+          </button>
+        </nav>
+      </div>
+
+      {activeTab === "generate" && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Input Section */}
+          <div className="lg:col-span-2">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <SparklesIcon className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" />
+                Generate AI Summary
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Paste your content or select a subject
+                  </label>
+                  <textarea
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Paste your study material here, or describe the topic you want summarized..."
+                    rows={8}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                    <select
+                      value={selectedSubject}
+                      onChange={(e) => setSelectedSubject(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {subjects.map((subject) => (
+                        <option key={subject} value={subject}>
+                          {subject}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Detail Level
+                    </label>
+                    <select
+                      value={detailLevel}
+                      onChange={(e) => setDetailLevel(e.target.value as "short" | "medium" | "detailed")}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="short">Short (Quick overview)</option>
+                      <option value="medium">Medium (Balanced detail)</option>
+                      <option value="detailed">Detailed (Comprehensive)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleGenerateSummary}
+                  disabled={!inputText.trim() || isGenerating}
+                  className="w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Generating Summary...</span>
+                    </>
+                  ) : (
+                    <>
+                      <SparklesIcon className="w-4 h-4" />
+                      <span>Generate Summary</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Panel */}
+          <div className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
+              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">How it works</h4>
+              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                <li>• Paste your study material or describe a topic</li>
+                <li>• Choose your preferred detail level</li>
+                <li>• AI generates a structured summary</li>
+                <li>• Save and organize your summaries</li>
+              </ul>
+            </div>
+
+            <div className="bg-green-50 dark:bg-green-900 rounded-lg p-4">
+              <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">Detail Levels</h4>
+              <div className="text-sm text-green-800 dark:text-green-200 space-y-2">
+                <div>
+                  <strong>Short:</strong> Key points only (~100 words)
+                </div>
+                <div>
+                  <strong>Medium:</strong> Balanced overview (~300 words)
+                </div>
+                <div>
+                  <strong>Detailed:</strong> Comprehensive analysis (~500+ words)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "history" && (
+        <div>
+          {filteredSummaries.length === 0 ? (
+            <div className="text-center py-12">
+              <DocumentTextIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No summaries yet</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">
+                Generate your first AI summary to get started with organized study materials.
+              </p>
+              <button
+                onClick={() => setActiveTab("generate")}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Create Summary
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {filteredSummaries.map((summary) => (
+                <SummaryCard
+                  key={summary.id}
+                  summary={summary}
+                  onDelete={handleDeleteSummary}
+                  onToggleBookmark={handleToggleBookmark}
+                  isBookmarked={bookmarkedSummaries.has(summary.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

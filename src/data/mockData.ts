@@ -1,0 +1,235 @@
+import type { Question, Test, TestAttempt, Summary, PlannerTask } from "../types"
+
+export const mockQuestions: Question[] = [
+  {
+    id: "1",
+    subject: "Physics",
+    year: 2023,
+    topic: "Mechanics",
+    questionText:
+      "A ball is thrown vertically upward with an initial velocity of 20 m/s. Calculate the maximum height reached.",
+    type: "subjective",
+    difficulty: "medium",
+    tags: ["kinematics", "projectile"],
+    isImportant: true,
+  },
+  {
+    id: "2",
+    subject: "Chemistry",
+    year: 2023,
+    topic: "Organic Chemistry",
+    questionText: "Which of the following is an example of nucleophilic substitution?",
+    type: "mcq",
+    difficulty: "easy",
+    options: ["SN1", "SN2", "Both A and B", "None of the above"],
+    correctAnswer: "Both A and B",
+    tags: ["organic", "reactions"],
+  },
+  {
+    id: "3",
+    subject: "Mathematics",
+    year: 2022,
+    topic: "Calculus",
+    questionText: "Find the derivative of f(x) = x³ + 2x² - 5x + 1",
+    type: "subjective",
+    difficulty: "easy",
+    tags: ["derivatives", "polynomials"],
+  },
+  {
+    id: "4",
+    subject: "Physics",
+    year: 2022,
+    topic: "Thermodynamics",
+    questionText: "What is the efficiency of a Carnot engine operating between 400K and 300K?",
+    type: "subjective",
+    difficulty: "hard",
+    tags: ["thermodynamics", "engines"],
+    isImportant: true,
+  },
+  {
+    id: "5",
+    subject: "Chemistry",
+    year: 2022,
+    topic: "Physical Chemistry",
+    questionText: "Calculate the pH of a 0.1M solution of acetic acid (Ka = 1.8 × 10⁻⁵)",
+    type: "subjective",
+    difficulty: "medium",
+    tags: ["acids", "equilibrium", "ph"],
+    isImportant: false,
+  },
+  {
+    id: "6",
+    subject: "Mathematics",
+    year: 2023,
+    topic: "Algebra",
+    questionText: "Solve the quadratic equation: 2x² - 5x + 3 = 0",
+    type: "mcq",
+    difficulty: "easy",
+    options: ["x = 1, 3/2", "x = 2, 1/2", "x = 1, 1/2", "x = 3, 1/3"],
+    correctAnswer: "x = 1, 3/2",
+    tags: ["quadratic", "factoring"],
+  },
+  {
+    id: "7",
+    subject: "Physics",
+    year: 2021,
+    topic: "Optics",
+    questionText: "A convex lens has a focal length of 20 cm. Find the image distance when object is placed at 30 cm.",
+    type: "subjective",
+    difficulty: "medium",
+    tags: ["lens", "optics", "focal-length"],
+    isImportant: true,
+  },
+  {
+    id: "8",
+    subject: "Chemistry",
+    year: 2021,
+    topic: "Inorganic Chemistry",
+    questionText: "Which of the following compounds shows maximum ionic character?",
+    type: "mcq",
+    difficulty: "medium",
+    options: ["NaCl", "MgO", "AlF₃", "SiO₂"],
+    correctAnswer: "MgO",
+    tags: ["ionic", "bonding"],
+  },
+  {
+    id: "9",
+    subject: "Mathematics",
+    year: 2021,
+    topic: "Trigonometry",
+    questionText: "Prove that: sin²θ + cos²θ = 1",
+    type: "subjective",
+    difficulty: "easy",
+    tags: ["trigonometry", "identity"],
+  },
+  {
+    id: "10",
+    subject: "Physics",
+    year: 2023,
+    topic: "Electricity",
+    questionText: "Calculate the equivalent resistance of three resistors 2Ω, 3Ω, and 6Ω connected in parallel.",
+    type: "subjective",
+    difficulty: "medium",
+    tags: ["resistance", "parallel", "circuits"],
+  },
+]
+
+export const mockTests: Test[] = [
+  {
+    id: "1",
+    title: "Physics Mock Test - Mechanics",
+    subject: "Physics",
+    questions: mockQuestions.filter((q) => q.subject === "Physics"),
+    duration: 60,
+    totalMarks: 100,
+    createdAt: "2024-01-15",
+  },
+  {
+    id: "2",
+    title: "Chemistry Practice Test",
+    subject: "Chemistry",
+    questions: mockQuestions.filter((q) => q.subject === "Chemistry"),
+    duration: 45,
+    totalMarks: 50,
+    createdAt: "2024-01-10",
+  },
+]
+
+export const mockTestAttempts: TestAttempt[] = [
+  {
+    id: "1",
+    testId: "1",
+    userId: "1",
+    answers: { "1": "h = v²/2g = 400/20 = 20m", "4": "η = 1 - T₂/T₁ = 1 - 300/400 = 0.25 = 25%" },
+    score: 85,
+    completedAt: "2024-01-16",
+    timeSpent: 55,
+  },
+]
+
+export const mockSummaries: Summary[] = [
+  {
+    id: "1",
+    title: "Newton's Laws of Motion",
+    content: "Newton's three laws form the foundation of classical mechanics...",
+    subject: "Physics",
+    detailLevel: "medium",
+    createdAt: "2024-01-14",
+  },
+  {
+    id: "2",
+    title: "Organic Reaction Mechanisms",
+    content: "Key organic reactions include nucleophilic and electrophilic substitutions...",
+    subject: "Chemistry",
+    detailLevel: "detailed",
+    createdAt: "2024-01-12",
+  },
+]
+
+export const mockPlannerTasks: PlannerTask[] = [
+  {
+    id: "1",
+    title: "Review Thermodynamics Chapter",
+    subject: "Physics",
+    type: "study",
+    dueDate: "2024-01-20",
+    completed: false,
+    priority: "high",
+  },
+  {
+    id: "2",
+    title: "Practice Organic Chemistry Problems",
+    subject: "Chemistry",
+    type: "revision",
+    dueDate: "2024-01-18",
+    completed: true,
+    priority: "medium",
+  },
+  {
+    id: "3",
+    title: "Mock Test - Mathematics",
+    subject: "Mathematics",
+    type: "test",
+    dueDate: "2024-01-22",
+    completed: false,
+    priority: "high",
+  },
+]
+
+// AI Assistant mock responses
+export const mockAIInsights = {
+  repeatedQuestions: [
+    {
+      pattern: "Projectile motion calculations",
+      frequency: 85,
+      years: [2021, 2022, 2023],
+      subjects: ["Physics"],
+    },
+    {
+      pattern: "Quadratic equation solving",
+      frequency: 78,
+      years: [2020, 2021, 2022, 2023],
+      subjects: ["Mathematics"],
+    },
+    {
+      pattern: "Organic reaction mechanisms",
+      frequency: 72,
+      years: [2021, 2022, 2023],
+      subjects: ["Chemistry"],
+    },
+  ],
+  twistedQuestions: [
+    {
+      id: "1",
+      originalConcept: "Basic projectile motion",
+      twist: "Added air resistance factor",
+      difficulty: "Increased from medium to hard",
+    },
+    {
+      id: "4",
+      originalConcept: "Simple Carnot engine efficiency",
+      twist: "Multiple temperature reservoirs",
+      difficulty: "Increased from easy to hard",
+    },
+  ],
+}
