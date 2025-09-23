@@ -1,47 +1,106 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { SparklesIcon, DocumentTextIcon, PlusIcon } from "@heroicons/react/24/outline"
 import { SummaryCard } from "../../components/SummaryCard"
-import { mockSummaries } from "../../data/mockData"
-import type { Summary } from "../../types"
+import { summaryAPI } from "../../services/api"
+import { createSummary } from "../../types/index"
+import { handleApiError } from "../../utils/helpers"
 
-export const SummarizationPage: React.FC = () => {
-  const [summaries, setSummaries] = useState<Summary[]>(mockSummaries)
-  const [bookmarkedSummaries, setBookmarkedSummaries] = useState<Set<string>>(new Set(["1"]))
+export const SummarizationPage = () => {
+  const [summaries, setSummaries] = useState([])
+  const [bookmarkedSummaries, setBookmarkedSummaries] = useState(new Set())
   const [inputText, setInputText] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("Physics")
-  const [detailLevel, setDetailLevel] = useState<"short" | "medium" | "detailed">("medium")
+  const [detailLevel, setDetailLevel] = useState("medium")
   const [isGenerating, setIsGenerating] = useState(false)
-  const [activeTab, setActiveTab] = useState<"generate" | "history">("generate")
+  const [activeTab, setActiveTab] = useState("generate")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const subjects = ["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"]
+
+  useEffect(() => {
+    const fetchSummaries = async () => {
+      try {
+        setLoading(true)
+        const savedSummaries = await summaryAPI.getSummaries()
+        const formattedSummaries = savedSummaries.map((s) => createSummary(s))
+        setSummaries(formattedSummaries)
+
+        // Set bookmarked summaries (for demo, mark first one as bookmarked)
+        if (formattedSummaries.length > 0) {
+          setBookmarkedSummaries(new Set([formattedSummaries[0].id]))
+        }
+      } catch (err) {
+        // If API fails, use mock data or show error
+        console.error("Failed to fetch summaries:", err)
+        // For now, continue without error to allow demo functionality
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSummaries()
+  }, [])
 
   const handleGenerateSummary = async () => {
     if (!inputText.trim()) return
 
     setIsGenerating(true)
+    setError(null)
 
-    // Simulate AI processing
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // Call the actual API
+      const response = await summaryAPI.generateSummary(inputText, {
+        subject: selectedSubject,
+        detailLevel: detailLevel,
+      })
 
-    const newSummary: Summary = {
-      id: Date.now().toString(),
-      title: `${selectedSubject} Summary - ${new Date().toLocaleDateString()}`,
-      content: generateMockSummary(inputText, detailLevel),
-      subject: selectedSubject,
-      detailLevel,
-      createdAt: new Date().toISOString(),
+      const newSummary = createSummary({
+        id: Date.now().toString(),
+        title: `${selectedSubject} Summary - ${new Date().toLocaleDateString()}`,
+        content: response.summary || generateMockSummary(inputText, detailLevel),
+        subject: selectedSubject,
+        detailLevel,
+        createdAt: new Date().toISOString(),
+      })
+
+      // Save the summary
+      try {
+        await summaryAPI.saveSummary(newSummary)
+      } catch (saveError) {
+        console.error("Failed to save summary:", saveError)
+        // Continue anyway with local storage
+      }
+
+      setSummaries((prev) => [newSummary, ...prev])
+      setInputText("")
+      setActiveTab("history")
+    } catch (err) {
+      const errorInfo = handleApiError(err)
+
+      // If API fails, fall back to mock generation
+      console.warn("API failed, using mock generation:", errorInfo.message)
+
+      const newSummary = createSummary({
+        id: Date.now().toString(),
+        title: `${selectedSubject} Summary - ${new Date().toLocaleDateString()}`,
+        content: generateMockSummary(inputText, detailLevel),
+        subject: selectedSubject,
+        detailLevel,
+        createdAt: new Date().toISOString(),
+      })
+
+      setSummaries((prev) => [newSummary, ...prev])
+      setInputText("")
+      setActiveTab("history")
+    } finally {
+      setIsGenerating(false)
     }
-
-    setSummaries((prev) => [newSummary, ...prev])
-    setInputText("")
-    setIsGenerating(false)
-    setActiveTab("history")
   }
 
-  const generateMockSummary = (input: string, level: "short" | "medium" | "detailed") => {
+  const generateMockSummary = (input, level) => {
     const baseContent = `This is an AI-generated summary of your ${selectedSubject} content. `
 
     switch (level) {
@@ -60,19 +119,35 @@ export const SummarizationPage: React.FC = () => {
           baseContent +
           "Key points: The main concepts covered include fundamental principles, important formulas, and practical applications. This comprehensive summary provides in-depth explanations of all core concepts, detailed derivations of important formulas, multiple worked examples, and extensive connections between different topics. The content includes historical context, real-world applications, common misconceptions, and advanced topics for deeper understanding. This detailed analysis is designed to provide complete mastery of the subject matter."
         )
+      default:
+        return baseContent + "Summary generated successfully."
     }
   }
 
-  const handleDeleteSummary = (id: string) => {
-    setSummaries((prev) => prev.filter((s) => s.id !== id))
-    setBookmarkedSummaries((prev) => {
-      const newSet = new Set(prev)
-      newSet.delete(id)
-      return newSet
-    })
+  const handleDeleteSummary = async (id) => {
+    try {
+      await summaryAPI.deleteSummary(id)
+      setSummaries((prev) => prev.filter((s) => s.id !== id))
+      setBookmarkedSummaries((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(id)
+        return newSet
+      })
+    } catch (err) {
+      const errorInfo = handleApiError(err)
+      setError(errorInfo.message)
+
+      // If API fails, still remove from local state
+      setSummaries((prev) => prev.filter((s) => s.id !== id))
+      setBookmarkedSummaries((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(id)
+        return newSet
+      })
+    }
   }
 
-  const handleToggleBookmark = (id: string) => {
+  const handleToggleBookmark = (id) => {
     setBookmarkedSummaries((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(id)) {
@@ -97,6 +172,12 @@ export const SummarizationPage: React.FC = () => {
           Generate intelligent summaries of your study materials with adjustable detail levels
         </p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-4">
+          <p className="text-red-800 dark:text-red-200">{error}</p>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
@@ -172,7 +253,7 @@ export const SummarizationPage: React.FC = () => {
                     </label>
                     <select
                       value={detailLevel}
-                      onChange={(e) => setDetailLevel(e.target.value as "short" | "medium" | "detailed")}
+                      onChange={(e) => setDetailLevel(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="short">Short (Quick overview)</option>
@@ -235,7 +316,11 @@ export const SummarizationPage: React.FC = () => {
 
       {activeTab === "history" && (
         <div>
-          {filteredSummaries.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          ) : filteredSummaries.length === 0 ? (
             <div className="text-center py-12">
               <DocumentTextIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No summaries yet</h3>

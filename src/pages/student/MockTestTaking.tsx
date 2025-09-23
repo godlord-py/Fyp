@@ -1,25 +1,18 @@
-import type React from "react"
+"use client"
+
 import { useState } from "react"
 import { ChevronLeftIcon, ChevronRightIcon, FlagIcon } from "@heroicons/react/24/outline"
 import { TestTimer } from "../../components/TestTimer"
 import { TestQuestion } from "../../components/TestQuestion"
-import type { Question } from "../../types"
 
-interface MockTestTakingProps {
-  questions: Question[]
-  duration: number
-  onSubmitTest: (answers: Record<string, string>, timeSpent: number) => void
-  onExitTest: () => void
-}
-
-export const MockTestTaking: React.FC<MockTestTakingProps> = ({ questions, duration, onSubmitTest, onExitTest }) => {
+export const MockTestTaking = ({ questions, duration, onSubmitTest, onExitTest }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set())
+  const [answers, setAnswers] = useState({})
+  const [flaggedQuestions, setFlaggedQuestions] = useState(new Set())
   const [startTime] = useState(Date.now())
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
 
-  const handleAnswerChange = (questionId: string, answer: string) => {
+  const handleAnswerChange = (questionId, answer) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }))
   }
 
@@ -33,7 +26,7 @@ export const MockTestTaking: React.FC<MockTestTakingProps> = ({ questions, durat
     onSubmitTest(answers, timeSpent)
   }
 
-  const toggleFlag = (questionIndex: number) => {
+  const toggleFlag = (questionIndex) => {
     setFlaggedQuestions((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(questionIndex)) {
@@ -46,7 +39,7 @@ export const MockTestTaking: React.FC<MockTestTakingProps> = ({ questions, durat
   }
 
   const getAnsweredCount = () => {
-    return Object.keys(answers).filter((key) => answers[key].trim() !== "").length
+    return Object.keys(answers).filter((key) => answers[key] && answers[key].toString().trim() !== "").length
   }
 
   const currentQ = questions[currentQuestion]
@@ -84,7 +77,7 @@ export const MockTestTaking: React.FC<MockTestTakingProps> = ({ questions, durat
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Questions</h3>
           <div className="grid grid-cols-4 gap-2">
             {questions.map((_, index) => {
-              const isAnswered = answers[questions[index].id]?.trim() !== ""
+              const isAnswered = answers[questions[index].id] && answers[questions[index].id].toString().trim() !== ""
               const isCurrent = index === currentQuestion
               const isFlagged = flaggedQuestions.has(index)
 

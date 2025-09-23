@@ -1,40 +1,35 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { MockTestGenerator } from "./MockTestGenerator"
 import { MockTestTaking } from "./MockTestTaking"
 import { TestResults } from "../../components/TestResults"
-import type { Question } from "../../types"
+import { createQuestion, createTestConfig } from "../../types/index"
 
-type TestState = "generator" | "taking" | "results"
+const testState = ["generator", "taking", "results"]
 
-interface TestConfig {
-  subject: string
-  topics: string[]
-  difficulty: string[]
-  questionTypes: string[]
-  questionCount: number
-  duration: number
-}
+export const MockTestSystem = () => {
+  const [testState, setTestState] = useState("generator")
+  const [currentTest, setCurrentTest] = useState(null)
 
-export const MockTestSystem: React.FC = () => {
-  const [testState, setTestState] = useState<TestState>("generator")
-  const [currentTest, setCurrentTest] = useState<{
-    questions: Question[]
-    config: TestConfig
-    answers?: Record<string, string>
-    timeSpent?: number
-  } | null>(null)
+  const handleStartTest = (questions, config) => {
+    const formattedQuestions = questions.map((q) => createQuestion(q))
+    const testConfig = createTestConfig(config)
 
-  const handleStartTest = (questions: Question[], config: TestConfig) => {
-    setCurrentTest({ questions, config })
+    setCurrentTest({
+      questions: formattedQuestions,
+      config: testConfig,
+    })
     setTestState("taking")
   }
 
-  const handleSubmitTest = (answers: Record<string, string>, timeSpent: number) => {
+  const handleSubmitTest = (answers, timeSpent) => {
     if (currentTest) {
-      setCurrentTest({ ...currentTest, answers, timeSpent })
+      setCurrentTest({
+        ...currentTest,
+        answers,
+        timeSpent,
+      })
       setTestState("results")
     }
   }

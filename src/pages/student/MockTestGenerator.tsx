@@ -1,26 +1,13 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ClipboardDocumentListIcon, PlayIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline"
-import { mockQuestions } from "../../data/mockData"
-import type { Question } from "../../types"
+import { paperAPI } from "../../services/api"
+import { createQuestion } from "../../types/index"
+import { handleApiError } from "../../utils/helpers"
 
-interface TestConfig {
-  subject: string
-  topics: string[]
-  difficulty: string[]
-  questionTypes: string[]
-  questionCount: number
-  duration: number
-}
-
-interface MockTestGeneratorProps {
-  onStartTest: (questions: Question[], config: TestConfig) => void
-}
-
-export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTest }) => {
-  const [config, setConfig] = useState<TestConfig>({
+export const MockTestGenerator = ({ onStartTest }) => {
+  const [config, setConfig] = useState({
     subject: "All",
     topics: [],
     difficulty: [],
@@ -29,7 +16,11 @@ export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTes
     duration: 30,
   })
 
-  const subjects = ["All", "Physics", "Chemistry", "Mathematics"]
+  const [subjects, setSubjects] = useState(["All"])
+  const [availableQuestions, setAvailableQuestions] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
   const allTopics = [
     "Mechanics",
     "Thermodynamics",
@@ -41,13 +32,53 @@ export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTes
     "Calculus",
     "Algebra",
     "Trigonometry",
+    "Data Structures",
+    "Algorithms",
+    "Database",
+    "Operating Systems",
+    "Networks",
   ]
   const difficulties = ["easy", "medium", "hard"]
   const questionTypes = ["mcq", "subjective"]
 
-  const handleArrayToggle = (key: keyof TestConfig, value: string) => {
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const subjectsData = await paperAPI.getSubjects()
+        setSubjects(["All", ...subjectsData])
+      } catch (err) {
+        console.error("Failed to fetch subjects:", err)
+      }
+    }
+
+    fetchSubjects()
+  }, [])
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true)
+        const queryParams = {
+          subject: config.subject !== "All" ? config.subject : undefined,
+          limit: 200, // Fetch more questions for test generation
+        }
+
+        const response = await paperAPI.getQuestions(queryParams)
+        setAvailableQuestions(response.questions || [])
+      } catch (err) {
+        const errorInfo = handleApiError(err)
+        setError(errorInfo.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchQuestions()
+  }, [config.subject])
+
+  const handleArrayToggle = (key, value) => {
     setConfig((prev) => {
-      const currentArray = prev[key] as string[]
+      const currentArray = prev[key]
       const newArray = currentArray.includes(value)
         ? currentArray.filter((item) => item !== value)
         : [...currentArray, value]
@@ -55,55 +86,69 @@ export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTes
     })
   }
 
-  const generateTest = () => {
-    let filteredQuestions = [...mockQuestions]
+  const generateTest = async () => {
+    try {
+      setLoading(true)
 
-    // Filter by subject
-    if (config.subject !== "All") {
-      filteredQuestions = filteredQuestions.filter((q) => q.subject === config.subject)
+      let filteredQuestions = [...availableQuestions]
+
+      // Filter by topics (client-side for now)
+      if (config.topics.length > 0) {
+        filteredQuestions = filteredQuestions.filter((q) =>
+          config.topics.some(
+            (topic) =>
+              q.questionText?.toLowerCase().includes(topic.toLowerCase()) ||
+              q.subject?.toLowerCase().includes(topic.toLowerCase()),
+          ),
+        )
+      }
+
+      // Filter by difficulty (assign random difficulty if not present)
+      if (config.difficulty.length > 0) {
+        filteredQuestions = filteredQuestions.filter((q) => {
+          const questionDifficulty = q.difficulty || difficulties[Math.floor(Math.random() * difficulties.length)]
+          return config.difficulty.includes(questionDifficulty)
+        })
+      }
+
+      // Filter by question types (assign default type if not present)
+      if (config.questionTypes.length > 0) {
+        filteredQuestions = filteredQuestions.filter((q) => {
+          const questionType = q.type || "subjective"
+          return config.questionTypes.includes(questionType)
+        })
+      }
+
+      if (filteredQuestions.length === 0) {
+        alert("No questions match your criteria. Please adjust your filters.")
+        return
+      }
+
+      // Shuffle and limit questions
+      const shuffled = filteredQuestions.sort(() => 0.5 - Math.random())
+      const selectedQuestions = shuffled.slice(0, Math.min(config.questionCount, shuffled.length))
+
+      // Format questions properly
+      const formattedQuestions = selectedQuestions.map((q) =>
+        createQuestion({
+          ...q,
+          difficulty: q.difficulty || difficulties[Math.floor(Math.random() * difficulties.length)],
+          type: q.type || "subjective",
+          topic: q.topic || "General",
+        }),
+      )
+
+      onStartTest(formattedQuestions, config)
+    } catch (err) {
+      const errorInfo = handleApiError(err)
+      setError(errorInfo.message)
+    } finally {
+      setLoading(false)
     }
-
-    // Filter by topics
-    if (config.topics.length > 0) {
-      filteredQuestions = filteredQuestions.filter((q) => config.topics.includes(q.topic))
-    }
-
-    // Filter by difficulty
-    if (config.difficulty.length > 0) {
-      filteredQuestions = filteredQuestions.filter((q) => config.difficulty.includes(q.difficulty))
-    }
-
-    // Filter by question types
-    if (config.questionTypes.length > 0) {
-      filteredQuestions = filteredQuestions.filter((q) => config.questionTypes.includes(q.type))
-    }
-
-    // Shuffle and limit questions
-    const shuffled = filteredQuestions.sort(() => 0.5 - Math.random())
-    const selectedQuestions = shuffled.slice(0, Math.min(config.questionCount, shuffled.length))
-
-    if (selectedQuestions.length === 0) {
-      alert("No questions match your criteria. Please adjust your filters.")
-      return
-    }
-
-    onStartTest(selectedQuestions, config)
   }
 
   const getAvailableQuestions = () => {
-    let count = mockQuestions.length
-
-    if (config.subject !== "All") {
-      count = mockQuestions.filter((q) => q.subject === config.subject).length
-    }
-
-    if (config.topics.length > 0) {
-      count = mockQuestions.filter(
-        (q) => (config.subject === "All" || q.subject === config.subject) && config.topics.includes(q.topic),
-      ).length
-    }
-
-    return count
+    return availableQuestions.length
   }
 
   return (
@@ -115,6 +160,12 @@ export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTes
           Create customized practice tests with smart filtering and auto-generation
         </p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-4">
+          <p className="text-red-800 dark:text-red-200">{error}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Configuration Panel */}
@@ -263,7 +314,9 @@ export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTes
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Available:</span>
-                <span className="font-medium text-gray-900 dark:text-white">{getAvailableQuestions()} questions</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {loading ? "Loading..." : `${getAvailableQuestions()} questions`}
+                </span>
               </div>
             </div>
 
@@ -294,10 +347,20 @@ export const MockTestGenerator: React.FC<MockTestGeneratorProps> = ({ onStartTes
           {/* Generate Button */}
           <button
             onClick={generateTest}
-            className="w-full bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2"
+            disabled={loading || availableQuestions.length === 0}
+            className="w-full bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
           >
-            <PlayIcon className="w-5 h-5" />
-            <span>Generate & Start Test</span>
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Loading Questions...</span>
+              </>
+            ) : (
+              <>
+                <PlayIcon className="w-5 h-5" />
+                <span>Generate & Start Test</span>
+              </>
+            )}
           </button>
         </div>
       </div>

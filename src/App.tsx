@@ -55,6 +55,7 @@ const AppRoutes: React.FC = () => {
         <Route path="mock-test/take/:testId" element={<MockTestTaking />} />
         <Route path="summary" element={<SummarizationPage />} />
         <Route path="planner" element={<StudyPlanner />} />
+        
       </Route>
 
       {/* Admin Routes with Layout */}

@@ -1,19 +1,23 @@
 "use client"
 
-import type React from "react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline"
-import { QuestionCard } from "../../components/QuestionCard"
+import { QuestionCard } from "./QuestionCard"
 import { FilterPanel } from "../../components/FilterPanel"
 import { AIAssistant } from "../../components/AIAssistant"
-import { mockQuestions } from "../../data/mockData"
-import type { Question } from "../../types"
+import { paperAPI } from "../../services/api"
+import { createQuestion } from "../../types/index"
+import { debounce, handleApiError } from "../../utils/helpers"
 
-export const PYQExplorer: React.FC = () => {
-  const [questions, setQuestions] = useState<Question[]>(mockQuestions)
+export const PYQExplorer = () => {
+  const [questions, setQuestions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [showFilters, setShowFilters] = useState(false)
   const [showAI, setShowAI] = useState(false)
+  const [subjects, setSubjects] = useState([])
+  const [sessions, setSessions] = useState([])
   const [filters, setFilters] = useState({
     subject: "All",
     year: "All",
@@ -23,7 +27,78 @@ export const PYQExplorer: React.FC = () => {
     showImportantOnly: false,
   })
 
-  const handleFilterChange = (key: string, value: string | boolean) => {
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setLoading(true)
+
+        // Fetch subjects and sessions for filters
+        const [subjectsData, sessionsData] = await Promise.all([paperAPI.getSubjects(), paperAPI.getSessions()])
+
+        setSubjects(["All", ...subjectsData])
+        setSessions(["All", ...sessionsData])
+
+        // Fetch initial questions
+        await fetchQuestions()
+      } catch (err) {
+        const errorInfo = handleApiError(err)
+        setError(errorInfo.message)
+        console.error("Failed to fetch initial data:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInitialData()
+  }, [])
+
+  const fetchQuestions = async (searchTerm = "", filterParams = {}) => {
+    try {
+      const queryParams = {
+        search: searchTerm,
+        subject: filterParams.subject !== "All" ? filterParams.subject : undefined,
+        session: filterParams.year !== "All" ? filterParams.year : undefined,
+        // Add more filter parameters as needed
+        limit: 100, // Fetch more questions initially
+      }
+
+      const response = await paperAPI.getQuestions(queryParams)
+      const formattedQuestions = response.questions.map((q) =>
+        createQuestion({
+          ...q,
+          id: q.id || q._id,
+          // Map backend fields to frontend format
+          difficulty: q.difficulty || "medium",
+          type: q.type || "subjective",
+          topic: q.topic || "General",
+          tags: q.tags || [],
+          isImportant: q.isImportant || false,
+        }),
+      )
+
+      setQuestions(formattedQuestions)
+    } catch (err) {
+      const errorInfo = handleApiError(err)
+      setError(errorInfo.message)
+      console.error("Failed to fetch questions:", err)
+    }
+  }
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((searchTerm, filterParams) => {
+        fetchQuestions(searchTerm, filterParams)
+      }, 500),
+    [],
+  )
+
+  useEffect(() => {
+    if (!loading) {
+      debouncedSearch(searchQuery, filters)
+    }
+  }, [searchQuery, filters, debouncedSearch, loading])
+
+  const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
@@ -39,37 +114,19 @@ export const PYQExplorer: React.FC = () => {
     setSearchQuery("")
   }
 
-  const handleToggleImportant = (questionId: string) => {
+  const handleToggleImportant = (questionId) => {
     setQuestions((prev) => prev.map((q) => (q.id === questionId ? { ...q, isImportant: !q.isImportant } : q)))
   }
 
   const filteredQuestions = useMemo(() => {
     return questions.filter((question) => {
-      // Search filter
-      if (searchQuery) {
-        const searchLower = searchQuery.toLowerCase()
-        const matchesSearch =
-          question.questionText.toLowerCase().includes(searchLower) ||
-          question.subject.toLowerCase().includes(searchLower) ||
-          question.topic.toLowerCase().includes(searchLower) ||
-          question.tags.some((tag) => tag.toLowerCase().includes(searchLower))
-
-        if (!matchesSearch) return false
-      }
-
-      // Subject filter
-      if (filters.subject !== "All" && question.subject !== filters.subject) return false
-
-      // Year filter
-      if (filters.year !== "All" && question.year.toString() !== filters.year) return false
-
-      // Topic filter
+      // Topic filter (client-side filtering for now)
       if (filters.topic !== "All" && question.topic !== filters.topic) return false
 
-      // Difficulty filter
+      // Difficulty filter (client-side filtering for now)
       if (filters.difficulty !== "All" && question.difficulty !== filters.difficulty) return false
 
-      // Type filter
+      // Type filter (client-side filtering for now)
       if (filters.type !== "All" && question.type !== filters.type) return false
 
       // Important only filter
@@ -77,7 +134,7 @@ export const PYQExplorer: React.FC = () => {
 
       return true
     })
-  }, [questions, searchQuery, filters])
+  }, [questions, filters])
 
   const stats = useMemo(() => {
     const total = filteredQuestions.length
@@ -94,6 +151,31 @@ export const PYQExplorer: React.FC = () => {
 
     return { total, important, byDifficulty, byType }
   }, [filteredQuestions])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 dark:text-red-400 mb-4">
+          <p className="text-lg font-medium">Error loading questions</p>
+          <p className="text-sm">{error}</p>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -152,6 +234,8 @@ export const PYQExplorer: React.FC = () => {
         <div className="lg:col-span-1">
           <FilterPanel
             filters={filters}
+            subjects={subjects}
+            sessions={sessions}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
             isOpen={showFilters}
