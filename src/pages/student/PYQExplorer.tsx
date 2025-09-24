@@ -22,8 +22,6 @@ export const PYQExplorer = () => {
     subject: "All",
     year: "All",
     topic: "All",
-    difficulty: "All",
-    type: "All",
     showImportantOnly: false,
   })
 
@@ -107,8 +105,6 @@ export const PYQExplorer = () => {
       subject: "All",
       year: "All",
       topic: "All",
-      difficulty: "All",
-      type: "All",
       showImportantOnly: false,
     })
     setSearchQuery("")
@@ -123,12 +119,6 @@ export const PYQExplorer = () => {
       // Topic filter (client-side filtering for now)
       if (filters.topic !== "All" && question.topic !== filters.topic) return false
 
-      // Difficulty filter (client-side filtering for now)
-      if (filters.difficulty !== "All" && question.difficulty !== filters.difficulty) return false
-
-      // Type filter (client-side filtering for now)
-      if (filters.type !== "All" && question.type !== filters.type) return false
-
       // Important only filter
       if (filters.showImportantOnly && !question.isImportant) return false
 
@@ -139,17 +129,12 @@ export const PYQExplorer = () => {
   const stats = useMemo(() => {
     const total = filteredQuestions.length
     const important = filteredQuestions.filter((q) => q.isImportant).length
-    const byDifficulty = {
-      easy: filteredQuestions.filter((q) => q.difficulty === "easy").length,
-      medium: filteredQuestions.filter((q) => q.difficulty === "medium").length,
-      hard: filteredQuestions.filter((q) => q.difficulty === "hard").length,
-    }
-    const byType = {
-      mcq: filteredQuestions.filter((q) => q.type === "mcq").length,
-      subjective: filteredQuestions.filter((q) => q.type === "subjective").length,
-    }
+    const bySubject = {}
+    filteredQuestions.forEach((q) => {
+      bySubject[q.subject] = (bySubject[q.subject] || 0) + 1
+    })
 
-    return { total, important, byDifficulty, byType }
+    return { total, important, bySubject }
   }, [filteredQuestions])
 
   if (loading) {
@@ -212,18 +197,6 @@ export const PYQExplorer = () => {
               <p className="font-bold text-yellow-600 dark:text-yellow-400">{stats.important}</p>
               <p className="text-gray-500 dark:text-gray-400">Important</p>
             </div>
-            <div className="text-center">
-              <p className="font-bold text-green-600 dark:text-green-400">{stats.byDifficulty.easy}</p>
-              <p className="text-gray-500 dark:text-gray-400">Easy</p>
-            </div>
-            <div className="text-center">
-              <p className="font-bold text-orange-600 dark:text-orange-400">{stats.byDifficulty.medium}</p>
-              <p className="text-gray-500 dark:text-gray-400">Medium</p>
-            </div>
-            <div className="text-center">
-              <p className="font-bold text-red-600 dark:text-red-400">{stats.byDifficulty.hard}</p>
-              <p className="text-gray-500 dark:text-gray-400">Hard</p>
-            </div>
           </div>
         </div>
       </div>
@@ -277,7 +250,7 @@ export const PYQExplorer = () => {
       </div>
 
       {/* AI Assistant */}
-      <AIAssistant isOpen={showAI} onToggle={() => setShowAI(!showAI)} />
+      <AIAssistant isOpen={showAI} onToggle={() => setShowAI(!showAI)} questions={filteredQuestions} />
     </div>
   )
 }

@@ -10,8 +10,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
   const [config, setConfig] = useState({
     subject: "All",
     topics: [],
-    difficulty: [],
-    questionTypes: [],
     questionCount: 10,
     duration: 30,
   })
@@ -38,8 +36,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
     "Operating Systems",
     "Networks",
   ]
-  const difficulties = ["easy", "medium", "hard"]
-  const questionTypes = ["mcq", "subjective"]
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -98,25 +94,10 @@ export const MockTestGenerator = ({ onStartTest }) => {
           config.topics.some(
             (topic) =>
               q.questionText?.toLowerCase().includes(topic.toLowerCase()) ||
-              q.subject?.toLowerCase().includes(topic.toLowerCase()),
+              q.subject?.toLowerCase().includes(topic.toLowerCase()) ||
+              q.topic?.toLowerCase().includes(topic.toLowerCase()),
           ),
         )
-      }
-
-      // Filter by difficulty (assign random difficulty if not present)
-      if (config.difficulty.length > 0) {
-        filteredQuestions = filteredQuestions.filter((q) => {
-          const questionDifficulty = q.difficulty || difficulties[Math.floor(Math.random() * difficulties.length)]
-          return config.difficulty.includes(questionDifficulty)
-        })
-      }
-
-      // Filter by question types (assign default type if not present)
-      if (config.questionTypes.length > 0) {
-        filteredQuestions = filteredQuestions.filter((q) => {
-          const questionType = q.type || "subjective"
-          return config.questionTypes.includes(questionType)
-        })
       }
 
       if (filteredQuestions.length === 0) {
@@ -128,11 +109,12 @@ export const MockTestGenerator = ({ onStartTest }) => {
       const shuffled = filteredQuestions.sort(() => 0.5 - Math.random())
       const selectedQuestions = shuffled.slice(0, Math.min(config.questionCount, shuffled.length))
 
-      // Format questions properly
+      // Format questions properly using actual database fields
       const formattedQuestions = selectedQuestions.map((q) =>
         createQuestion({
           ...q,
-          difficulty: q.difficulty || difficulties[Math.floor(Math.random() * difficulties.length)],
+          id: q.id || q._id,
+          difficulty: q.difficulty || "medium",
           type: q.type || "subjective",
           topic: q.topic || "General",
         }),
@@ -228,13 +210,14 @@ export const MockTestGenerator = ({ onStartTest }) => {
             </div>
           </div>
 
-          {/* Advanced Filters */}
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Advanced Filters</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Topic Filters</h3>
 
             {/* Topics */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Topics</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Topics (Optional)
+              </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {allTopics.map((topic) => (
                   <label key={topic} className="flex items-center space-x-2 cursor-pointer">
@@ -245,44 +228,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">{topic}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Difficulty */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Difficulty</label>
-              <div className="flex flex-wrap gap-2">
-                {difficulties.map((difficulty) => (
-                  <label key={difficulty} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.difficulty.includes(difficulty)}
-                      onChange={() => handleArrayToggle("difficulty", difficulty)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{difficulty}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Question Types */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Question Types</label>
-              <div className="flex flex-wrap gap-2">
-                {questionTypes.map((type) => (
-                  <label key={type} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.questionTypes.includes(type)}
-                      onChange={() => handleArrayToggle("questionTypes", type)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {type === "mcq" ? "MCQ" : "Subjective"}
-                    </span>
                   </label>
                 ))}
               </div>
@@ -325,19 +270,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
                 {config.topics.length > 0 && (
                   <>
                     <strong>Topics:</strong> {config.topics.join(", ")}
-                    <br />
-                  </>
-                )}
-                {config.difficulty.length > 0 && (
-                  <>
-                    <strong>Difficulty:</strong> {config.difficulty.join(", ")}
-                    <br />
-                  </>
-                )}
-                {config.questionTypes.length > 0 && (
-                  <>
-                    <strong>Types:</strong>{" "}
-                    {config.questionTypes.map((t) => (t === "mcq" ? "MCQ" : "Subjective")).join(", ")}
                   </>
                 )}
               </p>

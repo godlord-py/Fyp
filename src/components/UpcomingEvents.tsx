@@ -1,48 +1,58 @@
 import type React from "react"
 import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline"
-import { mockPlannerTasks } from "../data/mockData"
 
 export const UpcomingEvents: React.FC = () => {
-  const upcomingTasks = mockPlannerTasks
-    .filter((task) => !task.completed)
-    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-    .slice(0, 5)
+  // Mock upcoming events - in a real app, this would come from an API
+  const upcomingEvents = [
+    {
+      id: 1,
+      title: "Data Structures Quiz",
+      date: "2025-01-15",
+      time: "10:00 AM",
+      type: "quiz",
+      color: "blue",
+    },
+    {
+      id: 2,
+      title: "Database Systems Assignment Due",
+      date: "2025-01-18",
+      time: "11:59 PM",
+      type: "assignment",
+      color: "orange",
+    },
+    {
+      id: 3,
+      title: "Algorithms Mock Test",
+      date: "2025-01-20",
+      time: "2:00 PM",
+      type: "test",
+      color: "green",
+    },
+  ]
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const today = new Date()
-    const diffTime = date.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffDays === 0) return "Today"
-    if (diffDays === 1) return "Tomorrow"
-    if (diffDays < 7) return `${diffDays} days`
-    return date.toLocaleDateString()
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "text-red-600 dark:text-red-400"
-      case "medium":
-        return "text-yellow-600 dark:text-yellow-400"
-      case "low":
-        return "text-green-600 dark:text-green-400"
+  const getEventIcon = (type: string) => {
+    switch (type) {
+      case "quiz":
+        return <ClockIcon className="w-4 h-4" />
+      case "assignment":
+        return <CalendarIcon className="w-4 h-4" />
+      case "test":
+        return <CalendarIcon className="w-4 h-4" />
       default:
-        return "text-gray-600 dark:text-gray-400"
+        return <CalendarIcon className="w-4 h-4" />
     }
   }
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "test":
-        return "📝"
-      case "revision":
-        return "📚"
-      case "study":
-        return "📖"
+  const getColorClasses = (color: string) => {
+    switch (color) {
+      case "blue":
+        return "bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 border-blue-200 dark:border-blue-700"
+      case "green":
+        return "bg-green-50 dark:bg-green-900 text-green-600 dark:text-green-300 border-green-200 dark:border-green-700"
+      case "orange":
+        return "bg-orange-50 dark:bg-orange-900 text-orange-600 dark:text-orange-300 border-orange-200 dark:border-orange-700"
       default:
-        return "📋"
+        return "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
     }
   }
 
@@ -54,29 +64,28 @@ export const UpcomingEvents: React.FC = () => {
       </div>
 
       <div className="space-y-3">
-        {upcomingTasks.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-sm">No upcoming events</p>
-        ) : (
-          upcomingTasks.map((task) => (
-            <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg">{getTypeIcon(task.type)}</span>
+        {upcomingEvents.map((event) => (
+          <div key={event.id} className={`p-3 rounded-lg border ${getColorClasses(event.color)}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                {getEventIcon(event.type)}
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{task.title}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{task.subject}</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm">{event.title}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(event.date).toLocaleDateString()} at {event.time}
+                  </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                  <ClockIcon className="w-3 h-3 mr-1" />
-                  {formatDate(task.dueDate)}
-                </p>
-                <span className={`text-xs font-medium capitalize ${getPriorityColor(task.priority)}`}>
-                  {task.priority}
-                </span>
-              </div>
             </div>
-          ))
+          </div>
+        ))}
+
+        {upcomingEvents.length === 0 && (
+          <div className="text-center py-8">
+            <CalendarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">No upcoming events</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">Your schedule is clear for now</p>
+          </div>
         )}
       </div>
     </div>
