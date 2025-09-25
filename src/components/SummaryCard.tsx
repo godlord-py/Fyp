@@ -8,7 +8,7 @@ import {
   AcademicCapIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  BookmarkIconSolid,
+
 } from "@heroicons/react/24/outline"
 import { formatDate, truncateText } from "../utils/helpers"
 
@@ -204,7 +204,7 @@ export const SummaryCard = ({ summary, onDelete, onToggleBookmark, isBookmarked 
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               {isBookmarked ? (
-                <BookmarkIconSolid className="w-5 h-5 text-yellow-500" />
+                <BookmarkIcon className="w-5 h-5 text-yellow-500" />
               ) : (
                 <BookmarkIcon className="w-5 h-5 text-gray-400" />
               )}
