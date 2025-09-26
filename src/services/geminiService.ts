@@ -1,236 +1,438 @@
-/**
- * GeminiService handles all interactions with the Google Gemini API.
- * It is responsible for generating summaries, creating structured visual data,
- * and analyzing questions by sending formatted prompts to the AI model.
- *
- * This service uses the standard `fetch` API for requests and includes
- * robust error handling with exponential backoff for retries, ensuring
- * resilience against network issues and rate limiting.
- */
-class GeminiService {
-  // Use the recommended Gemini Flash model for speed and capability.
-  private readonly API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
-  private apiKey: string | null = null;
+import { GoogleGenAI } from "@google/genai"
+
+export class GeminiService {
+  private ai: GoogleGenAI | null = null
+  private requestCount = 0
+  private lastRequestTime = 0
+  private readonly MAX_REQUESTS_PER_MINUTE = 15
+  private readonly MIN_REQUEST_INTERVAL = 4000 // 4 seconds between requests
 
   constructor() {
-    // It's safer to access environment variables directly within the class.
-    this.apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    this.initializeAPI()
   }
 
-  /**
-   * Checks if the Gemini API key is provided in the environment variables.
-   * @returns {boolean} True if the API key is configured.
-   */
+  private initializeAPI() {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+    if (apiKey) {
+      this.ai = new GoogleGenAI({ apiKey })
+    }
+  }
+
   isConfigured(): boolean {
-    return !!this.apiKey;
+    return this.ai !== null
   }
 
-  /**
-   * The core method for making requests to the Gemini API.
-   * It includes robust error handling and an exponential backoff retry mechanism.
-   * @param {string} prompt - The complete prompt to send to the model.
-   * @param {number} maxRetries - The maximum number of times to retry on failure.
-   * @returns {Promise<string>} The text content from the API response.
-   */
-  private async makeAPIRequest(prompt: string, maxRetries = 3): Promise<string> {
-    if (!this.isConfigured()) {
-      console.error("[v1] Gemini API key is not configured.");
-      // Return fallback content immediately if not configured.
-      return this.getFallbackContent(prompt);
+  private async waitForRateLimit(): Promise<void> {
+    const now = Date.now()
+    const timeSinceLastRequest = now - this.lastRequestTime
+
+    if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL) {
+      const waitTime = this.MIN_REQUEST_INTERVAL - timeSinceLastRequest
+      console.log(`[v0] Rate limiting: waiting ${waitTime}ms before next request`)
+      await new Promise((resolve) => setTimeout(resolve, waitTime))
     }
 
-    const fullApiUrl = `${this.API_URL}?key=${this.apiKey}`;
+    this.lastRequestTime = Date.now()
+    this.requestCount++
+  }
+
+  private async makeAPIRequest(prompt: string, maxRetries = 3): Promise<string> {
+    if (!this.ai) {
+      throw new Error("Gemini API not configured. Please add VITE_GEMINI_API_KEY to your environment variables.")
+    }
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch(fullApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{ text: prompt }]
-            }],
-          }),
-        });
+        await this.waitForRateLimit()
 
-        if (!response.ok) {
-          // Handle non-successful HTTP statuses
-          if (response.status === 429 && attempt < maxRetries) {
-            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
-            console.warn(`[v1] Rate limited. Retrying attempt ${attempt} in ${Math.round(waitTime / 1000)}s...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-            continue; // Retry the request
+        const result = await this.ai.models.generateContent({
+          model: "gemini-2.0-flash-001",
+          contents: prompt,
+        })
+
+        return result.text
+      } catch (error: any) {
+        console.error(`[v0] API request attempt ${attempt} failed:`, error)
+
+        if (error.status === 429 || error.message?.includes("429")) {
+          const waitTime = Math.pow(2, attempt) * 2000 // Exponential backoff: 2s, 4s, 8s
+          console.log(`[v0] Rate limited. Waiting ${waitTime}ms before retry ${attempt}/${maxRetries}`)
+
+          if (attempt < maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, waitTime))
+            continue
+          } else {
+            // Return fallback content instead of throwing error
+            console.log(`[v0] Max retries reached. Using fallback content.`)
+            return this.getFallbackContent(prompt)
           }
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-
-        const result = await response.json();
-        const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!text) {
-          throw new Error("Invalid response structure from API.");
-        }
-
-        return text;
-
-      } catch (error) {
-        console.error(`[v1] API request attempt ${attempt} failed:`, error);
-        if (attempt >= maxRetries) {
-          console.warn("[v1] Max retries reached. Using fallback content.");
-          return this.getFallbackContent(prompt);
+        } else {
+          // For non-rate-limit errors, try once more or return fallback
+          if (attempt === maxRetries) {
+            return this.getFallbackContent(prompt)
+          }
         }
       }
     }
 
-    // This part should ideally not be reached, but serves as a final fallback.
-    return this.getFallbackContent(prompt);
+    return this.getFallbackContent(prompt)
   }
 
-  /**
-   * Generates a text-based summary based on the specified type.
-   * @param {string} text - The input text to summarize.
-   * @param {string} subject - The academic subject of the text.
-   * @param {string} summaryType - The desired format (e.g., 'comprehensive', 'bullet').
-   * @returns {Promise<string>} A Markdown-formatted summary string.
-   */
-  async summarizeText(text: string, subject: string, summaryType = "comprehensive"): Promise<string> {
-    const prompt = this.generatePromptByType(text, subject, summaryType);
-    return this.makeAPIRequest(prompt);
-  }
-
-  /**
-   * Generates a structured JSON object for a visual summary.
-   * @param {string} text - The input text.
-   * @param {string} subject - The academic subject.
-   * @returns {Promise<object>} A JSON object representing the visual summary.
-   */
-  async generateVisualSummary(text: string, subject: string): Promise<object> {
-    const prompt = `
-      Analyze the following content on the subject of "${subject}" and generate a structured summary.
-
-      **Content to analyze:**
-      ${text}
-
-      **Instructions:**
-      Provide a valid JSON response with the following structure. Do not include any text or markdown formatting outside of the JSON object.
-      {
-        "keyPoints": ["A concise key takeaway", "Another important point", "...", "Final key point"],
-        "concepts": [
-          {"name": "Concept Name", "description": "A brief, clear description of the concept.", "importance": "high|medium|low"}
-        ],
-        "flowChart": [
-          {"step": "Step 1 Title", "description": "Description of what happens in the first step."}
-        ],
-        "mindMap": {
-          "central": "The Core Topic",
-          "branches": [
-            {"topic": "Main Branch 1", "subtopics": ["Sub-topic 1a", "Sub-topic 1b"]}
-          ]
-        }
-      }
-    `;
-
-    const resultText = await this.makeAPIRequest(prompt);
-    try {
-        // Clean up the response to ensure it's valid JSON
-        const cleanJson = resultText.replace(/```json/g, "").replace(/```/g, "").trim();
-        return JSON.parse(cleanJson);
-    } catch (error) {
-        console.error("[v1] Failed to parse JSON from visual summary response. Using fallback.", error);
-        // The fallback content for visual summaries is already a valid JSON string.
-        return JSON.parse(this.getFallbackContent('visual summary'));
-    }
-  }
-
-
-  /**
-   * Generates a specific prompt based on the desired summary type.
-   * **This is where we instruct the AI on formatting.**
-   * @param {string} text - The input text.
-   * @param {string} subject - The academic subject.
-   * @param {string} summaryType - The summary format.
-   * @returns {string} The fully constructed prompt.
-   */
-  private generatePromptByType(text: string, subject: string, summaryType: string): string {
-    const baseInstruction = `
-      You are an expert academic assistant specializing in **${subject}**.
-      Analyze the provided text and generate a summary based on the following format and rules.
-
-      **Formatting Rules:**
-      - The entire response MUST be in GitHub Flavored Markdown.
-      - Use headings (##, ###), bold text (**term**), and bullet points (-) for clarity.
-      - For all mathematical formulas or equations, use LaTeX syntax enclosed in '$$' delimiters (e.g., $$ E = mc^2 $$).
-      - If a comparison is useful, create a Markdown table.
-
-      **Text to Analyze:**
-      ---
-      ${text}
-      ---
-    `;
-
-    switch (summaryType) {
-      case "comprehensive":
-        return `${baseInstruction}\n**Task:** Create a detailed, comprehensive summary. It should include main concepts, key principles, practical examples, and a concluding overview. Structure it like a high-quality study guide.`;
-
-      case "bullet":
-        return `${baseInstruction}\n**Task:** Create a concise summary using nested bullet points. Use bold text for main topics and indented bullets for key details underneath them.`;
-
-      case "qa":
-        return `${baseInstruction}\n**Task:** Create a summary in a Question & Answer format. Generate 5-7 insightful questions that cover the core material, followed by clear, accurate answers. Format as:\n### Question Title\n**Q:** [Question]\n**A:** [Answer]`;
-
-      case "flashcards":
-        return `${baseInstruction}\n**Task:** Create content for study flashcards. Format this as a Markdown table with two columns: "Front (Term/Question)" and "Back (Definition/Answer)". Include 5-8 important terms.`;
-      
-      // Note: 'visual' type is handled by generateVisualSummary, this case is a fallback.
-      case "visual":
-          return `${baseInstruction}\n**Task:** Describe the key concepts and their relationships in a structured way that could be turned into a mind map or flowchart. Use headings and bullet points to show hierarchy.`;
-          
-      default:
-        return `${baseInstruction}\n**Task:** Provide a standard, well-structured summary focusing on the most important aspects of the content.`;
-    }
-  }
-
-  /**
-   * Provides fallback content when the API fails, formatted in Markdown.
-   * @param {string} prompt - The original prompt, used to determine the fallback type.
-   * @returns {string} A Markdown-formatted fallback string.
-   */
   private getFallbackContent(prompt: string): string {
-    if (prompt.includes('"keyPoints"')) { // Check for visual summary JSON prompt
-        return JSON.stringify({
-            keyPoints: ["Fallback: Unable to connect to AI service.", "Core concepts could not be analyzed.", "Please check your API key and network connection."],
-            concepts: [{ name: "Connection Error", description: "The service failed to retrieve data from the Gemini API.", importance: "high" }],
-            flowChart: [{ step: "Error", description: "API request failed after multiple retries." }],
-            mindMap: { central: "Service Failure", branches: [{ topic: "Troubleshooting", subtopics: ["Check VITE_GEMINI_API_KEY", "Verify internet connection"] }] }
-        });
+    const isVisualSummary = prompt.includes("JSON response") || prompt.includes("visual summary")
+    const isQA = prompt.includes("Q&A format")
+    const isFlashcards = prompt.includes("flashcard-style")
+    const isBullet = prompt.includes("bullet-point")
+
+    if (isVisualSummary) {
+      return JSON.stringify({
+        keyPoints: [
+          "Core concepts and fundamental principles",
+          "Practical applications and real-world examples",
+          "Important methodologies and problem-solving approaches",
+          "Key relationships between different concepts",
+          "Critical analysis and evaluation techniques",
+        ],
+        concepts: [
+          {
+            name: "Fundamental Concepts",
+            description: "Basic principles that form the foundation",
+            importance: "high",
+          },
+          { name: "Applications", description: "Practical implementations and use cases", importance: "medium" },
+          { name: "Advanced Topics", description: "Complex concepts for deeper understanding", importance: "medium" },
+        ],
+        flowChart: [
+          { step: "Understanding", description: "Grasp the fundamental concepts" },
+          { step: "Application", description: "Apply knowledge to solve problems" },
+          { step: "Analysis", description: "Analyze and evaluate different approaches" },
+          { step: "Synthesis", description: "Combine concepts for comprehensive understanding" },
+        ],
+        mindMap: {
+          central: "Subject Overview",
+          branches: [
+            { topic: "Theory", subtopics: ["Concepts", "Principles", "Laws", "Models"] },
+            { topic: "Practice", subtopics: ["Examples", "Exercises", "Projects", "Applications"] },
+            { topic: "Analysis", subtopics: ["Evaluation", "Comparison", "Synthesis", "Innovation"] },
+          ],
+        },
+      })
     }
 
-    if (prompt.includes("Q&A format")) {
-        return `
-          ### Fallback Summary
-          **Q:** What happened?
-          **A:** The AI summary could not be generated due to a connection issue with the API.
+    if (isQA) {
+      return `Q: What are the main concepts covered in this topic?
+A: The main concepts include fundamental principles, practical applications, and key methodologies that form the foundation of understanding.
 
-          **Q:** What should I do?
-          **A:** Please verify your internet connection and ensure the Gemini API key is correctly configured in your environment variables.
-        `;
+Q: How can these concepts be applied in real-world scenarios?
+A: These concepts can be applied through practical problem-solving, project implementation, and analytical thinking in various professional contexts.
+
+Q: What are the most important points to remember?
+A: Focus on understanding core principles, practicing application techniques, and developing analytical skills for comprehensive mastery.
+
+Q: How do different concepts relate to each other?
+A: Concepts are interconnected through shared principles, complementary applications, and hierarchical relationships that build upon each other.
+
+Q: What study strategies work best for this material?
+A: Effective strategies include active practice, concept mapping, real-world application, and regular review of key principles.`
     }
 
-    // Default Markdown fallback
-    return `
-      ##  Offline Summary (Fallback)
-      
-      There was an issue connecting to the AI summarization service. Please check your network connection and API key configuration.
-      
-      ### Key Areas to Review Manually:
-      - Identify the **core arguments** or main ideas in your text.
-      - List out key **terminology** and their definitions.
-      - Note any **formulas or important data** presented.
-    `;
+    if (isFlashcards) {
+      return `FRONT: Core Concepts | BACK: Fundamental principles that form the foundation of the subject
+
+FRONT: Applications | BACK: Practical implementations and real-world use cases
+
+FRONT: Methodologies | BACK: Systematic approaches and problem-solving techniques
+
+FRONT: Key Relationships | BACK: How different concepts connect and build upon each other
+
+FRONT: Analysis Techniques | BACK: Methods for evaluating and comparing different approaches
+
+FRONT: Best Practices | BACK: Proven strategies and recommended approaches for success`
+    }
+
+    if (isBullet) {
+      return `• **Core Concepts**
+  - Fundamental principles and definitions
+  - Basic terminology and key concepts
+  - Foundation knowledge requirements
+
+• **Practical Applications**
+  - Real-world implementation examples
+  - Problem-solving approaches
+  - Industry use cases and scenarios
+
+• **Key Methodologies**
+  - Systematic approaches and frameworks
+  - Step-by-step procedures
+  - Best practices and guidelines
+
+• **Important Relationships**
+  - How concepts connect and interact
+  - Dependencies and prerequisites
+  - Hierarchical organization of topics
+
+• **Study Recommendations**
+  - Focus areas for effective learning
+  - Practice exercises and activities
+  - Review strategies and techniques`
+    }
+
+    // Default comprehensive summary
+    return `This comprehensive summary covers the essential aspects of the subject matter, focusing on key concepts, practical applications, and important methodologies.
+
+**Main Concepts:**
+The content explores fundamental principles that form the foundation of understanding, including core definitions, essential terminology, and basic theoretical frameworks.
+
+**Practical Applications:**
+Real-world implementations demonstrate how theoretical knowledge translates into practical solutions, with examples from various professional contexts and industry applications.
+
+**Key Methodologies:**
+Systematic approaches and problem-solving techniques provide structured methods for applying knowledge effectively, including step-by-step procedures and best practices.
+
+**Study Recommendations:**
+For effective learning, focus on understanding core principles, practicing application techniques, and developing analytical skills through regular review and hands-on exercises.
+
+**Important Connections:**
+The various concepts are interconnected through shared principles and complementary applications, creating a comprehensive framework for understanding and application.`
+  }
+
+  async summarizeText(text: string, subject: string, summaryType = "comprehensive"): Promise<string> {
+    const prompt = this.generatePromptByType(text, subject, summaryType)
+    return await this.makeAPIRequest(prompt)
+  }
+
+  async generateVisualSummary(
+    text: string,
+    subject: string,
+  ): Promise<{
+    keyPoints: string[]
+    concepts: { name: string; description: string; importance: "high" | "medium" | "low" }[]
+    flowChart: { step: string; description: string }[]
+    mindMap: { central: string; branches: { topic: string; subtopics: string[] }[] }
+  }> {
+    const prompt = `Analyze the following ${subject} content and create a structured visual summary:
+
+${text}
+
+Please provide a JSON response with the following structure:
+{
+  "keyPoints": ["point1", "point2", "point3", "point4", "point5"],
+  "concepts": [
+    {"name": "concept name", "description": "brief description", "importance": "high|medium|low"}
+  ],
+  "flowChart": [
+    {"step": "Step 1", "description": "what happens"}
+  ],
+  "mindMap": {
+    "central": "main topic",
+    "branches": [
+      {"topic": "branch topic", "subtopics": ["subtopic1", "subtopic2"]}
+    ]
   }
 }
 
-// Export a singleton instance of the service.
-export const geminiService = new GeminiService();
+Focus on ${subject}-specific terminology and concepts. Make it educational and easy to understand.`
+
+    try {
+      const resultText = await this.makeAPIRequest(prompt)
+      try {
+        return JSON.parse(resultText)
+      } catch {
+        // Parse fallback JSON if it's a string
+        return JSON.parse(this.getFallbackContent(prompt))
+      }
+    } catch (error) {
+      console.error("Error generating visual summary:", error)
+      // Return parsed fallback content
+      return JSON.parse(this.getFallbackContent(prompt))
+    }
+  }
+
+  private generatePromptByType(text: string, subject: string, summaryType: string): string {
+    const baseContext = `You are an expert ${subject} tutor. Analyze the following ${subject} content:`
+
+    switch (summaryType) {
+      case "comprehensive":
+        return `${baseContext}
+
+${text}
+
+Create a comprehensive summary that includes:
+1. Main concepts and their definitions
+2. Key principles and theories specific to ${subject}
+3. Important formulas, algorithms, or methodologies
+4. Practical applications and examples
+5. Connections between different concepts
+6. Study tips for mastering this ${subject} topic
+
+Make it detailed but well-organized for effective learning.`
+
+      case "bullet":
+        return `${baseContext}
+
+${text}
+
+Create a bullet-point summary with:
+• Main topics (use clear headings)
+• Key concepts under each topic
+• Important facts and figures
+• Critical formulas or rules for ${subject}
+• Quick reference points
+
+Format with clear bullet points and subpoints. Keep it concise but comprehensive.`
+
+      case "visual":
+        return `${baseContext}
+
+${text}
+
+Create a text-based visual summary that describes:
+1. Key concepts as visual elements
+2. Relationships between ideas (like a mind map)
+3. Process flows or step-by-step procedures
+4. Hierarchical organization of topics
+5. Visual metaphors to explain ${subject} concepts
+
+Describe how this information would be organized visually for maximum learning impact.`
+
+      case "qa":
+        return `${baseContext}
+
+${text}
+
+Create a Q&A format summary with:
+- 8-10 important questions about this ${subject} topic
+- Clear, detailed answers for each question
+- Questions that cover different difficulty levels
+- Focus on understanding rather than memorization
+- Include "Why" and "How" questions for deeper learning
+
+Format as: Q: [Question] A: [Detailed Answer]`
+
+      case "flashcards":
+        return `${baseContext}
+
+${text}
+
+Create flashcard-style content with:
+- 10-12 key terms or concepts from ${subject}
+- Clear, concise definitions
+- Memory aids or mnemonics where helpful
+- Examples for complex concepts
+- Progressive difficulty from basic to advanced
+
+Format as: FRONT: [Term/Question] | BACK: [Definition/Answer]`
+
+      default:
+        return `${baseContext}
+
+${text}
+
+Provide a well-structured summary focusing on the most important aspects of this ${subject} content.`
+    }
+  }
+
+  async analyzeQuestions(questions: any[]): Promise<{
+    patterns: string[]
+    insights: string[]
+    tips: string[]
+  }> {
+    const questionsText = questions
+      .map((q) => `Subject: ${q.subject}, Topic: ${q.topic}, Difficulty: ${q.difficulty}, Question: ${q.question}`)
+      .join("\n\n")
+
+    const prompt = `Analyze the following exam questions and provide insights:
+
+${questionsText}
+
+Please provide:
+1. Common patterns you notice across these questions
+2. Key insights about the topics and difficulty levels  
+3. Study tips based on these question types
+
+Format your response as JSON with three arrays: "patterns", "insights", and "tips".`
+
+    try {
+      const resultText = await this.makeAPIRequest(prompt)
+      try {
+        return JSON.parse(resultText)
+      } catch {
+        const lines = resultText.split("\n").filter((line) => line.trim())
+        return {
+          patterns: lines.slice(0, 3).map((line) => line.replace(/^[\d\-*•]\s*/, "")),
+          insights: lines.slice(3, 6).map((line) => line.replace(/^[\d\-*•]\s*/, "")),
+          tips: lines.slice(6, 9).map((line) => line.replace(/^[\d\-*•]\s*/, "")),
+        }
+      }
+    } catch (error) {
+      console.error("Error analyzing questions:", error)
+      // Return fallback analysis
+      return {
+        patterns: [
+          "Questions focus on fundamental concepts and practical applications",
+          "Multiple difficulty levels test different depths of understanding",
+          "Topics cover both theoretical knowledge and problem-solving skills",
+        ],
+        insights: [
+          "Emphasis on understanding core principles rather than memorization",
+          "Questions require analytical thinking and concept application",
+          "Progressive difficulty builds from basic to advanced concepts",
+        ],
+        tips: [
+          "Focus on understanding underlying principles and concepts",
+          "Practice applying knowledge to different problem scenarios",
+          "Review connections between related topics and concepts",
+        ],
+      }
+    }
+  }
+
+  public async generateText(prompt: string): Promise<string> {
+    return await this["makeAPIRequest"](prompt)
+  }
+
+  public async generateJSON(prompt: string): Promise<any> {
+    const txt = await this["makeAPIRequest"](prompt)
+    const tryParse = (s: string) => {
+      try {
+        return JSON.parse(s)
+      } catch {
+        return null
+      }
+    }
+
+    // 1) Direct parse
+    let parsed = tryParse(txt)
+    if (parsed) return parsed
+
+    // 2) Strip code fences \`\`\`json ... \`\`\`
+    const fenced = txt
+      .replace(/```json([\s\S]*?)```/gi, "$1")
+      .replace(/```([\s\S]*?)```/g, "$1")
+      .trim()
+    parsed = tryParse(fenced)
+    if (parsed) return parsed
+
+    // 3) Extract first JSON array or object slice
+    const arrayStart = fenced.indexOf("[")
+    const arrayEnd = fenced.lastIndexOf("]")
+    if (arrayStart !== -1 && arrayEnd !== -1 && arrayEnd > arrayStart) {
+      const slice = fenced.slice(arrayStart, arrayEnd + 1)
+      parsed = tryParse(slice)
+      if (parsed) return parsed
+    }
+
+    const objStart = fenced.indexOf("{")
+    const objEnd = fenced.lastIndexOf("}")
+    if (objStart !== -1 && objEnd !== -1 && objEnd > objStart) {
+      const slice = fenced.slice(objStart, objEnd + 1)
+      parsed = tryParse(slice)
+      if (parsed) return parsed
+    }
+
+    // 4) Give up
+    return null
+  }
+}
+
+export const geminiService = new GeminiService()

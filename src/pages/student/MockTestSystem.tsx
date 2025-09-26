@@ -6,8 +6,6 @@ import { MockTestTaking } from "./MockTestTaking"
 import { TestResults } from "../../components/TestResults"
 import { createQuestion, createTestConfig } from "../../types/index"
 
-const testState = ["generator", "taking", "results"]
-
 export const MockTestSystem = () => {
   const [testState, setTestState] = useState("generator")
   const [currentTest, setCurrentTest] = useState(null)
@@ -23,12 +21,13 @@ export const MockTestSystem = () => {
     setTestState("taking")
   }
 
-  const handleSubmitTest = (answers, timeSpent) => {
+  const handleSubmitTest = (answers, timeSpent, grading) => {
     if (currentTest) {
       setCurrentTest({
         ...currentTest,
         answers,
         timeSpent,
+        grading, // { graded: GradedAnswer[], summary: { correct, total, percentage } }
       })
       setTestState("results")
     }
@@ -66,6 +65,7 @@ export const MockTestSystem = () => {
           questions={currentTest.questions}
           answers={currentTest.answers}
           timeSpent={currentTest.timeSpent || 0}
+          grading={currentTest.grading}
           onRetakeTest={handleRetakeTest}
           onBackToTests={handleBackToGenerator}
         />

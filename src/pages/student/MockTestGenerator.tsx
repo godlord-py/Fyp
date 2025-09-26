@@ -9,7 +9,6 @@ import { handleApiError } from "../../utils/helpers"
 export const MockTestGenerator = ({ onStartTest }) => {
   const [config, setConfig] = useState({
     subject: "All",
-    topics: [],
     questionCount: 10,
     duration: 30,
   })
@@ -18,24 +17,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
   const [availableQuestions, setAvailableQuestions] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-
-  const allTopics = [
-    "Mechanics",
-    "Thermodynamics",
-    "Optics",
-    "Electricity",
-    "Organic Chemistry",
-    "Physical Chemistry",
-    "Inorganic Chemistry",
-    "Calculus",
-    "Algebra",
-    "Trigonometry",
-    "Data Structures",
-    "Algorithms",
-    "Database",
-    "Operating Systems",
-    "Networks",
-  ]
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -46,7 +27,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
         console.error("Failed to fetch subjects:", err)
       }
     }
-
     fetchSubjects()
   }, [])
 
@@ -56,9 +36,8 @@ export const MockTestGenerator = ({ onStartTest }) => {
         setLoading(true)
         const queryParams = {
           subject: config.subject !== "All" ? config.subject : undefined,
-          limit: 200, // Fetch more questions for test generation
+          limit: 200,
         }
-
         const response = await paperAPI.getQuestions(queryParams)
         setAvailableQuestions(response.questions || [])
       } catch (err) {
@@ -68,48 +47,23 @@ export const MockTestGenerator = ({ onStartTest }) => {
         setLoading(false)
       }
     }
-
     fetchQuestions()
   }, [config.subject])
-
-  const handleArrayToggle = (key, value) => {
-    setConfig((prev) => {
-      const currentArray = prev[key]
-      const newArray = currentArray.includes(value)
-        ? currentArray.filter((item) => item !== value)
-        : [...currentArray, value]
-      return { ...prev, [key]: newArray }
-    })
-  }
 
   const generateTest = async () => {
     try {
       setLoading(true)
 
-      let filteredQuestions = [...availableQuestions]
-
-      // Filter by topics (client-side for now)
-      if (config.topics.length > 0) {
-        filteredQuestions = filteredQuestions.filter((q) =>
-          config.topics.some(
-            (topic) =>
-              q.questionText?.toLowerCase().includes(topic.toLowerCase()) ||
-              q.subject?.toLowerCase().includes(topic.toLowerCase()) ||
-              q.topic?.toLowerCase().includes(topic.toLowerCase()),
-          ),
-        )
-      }
+      const filteredQuestions = [...availableQuestions]
 
       if (filteredQuestions.length === 0) {
-        alert("No questions match your criteria. Please adjust your filters.")
+        alert("No questions available. Please change subject or try again.")
         return
       }
 
-      // Shuffle and limit questions
       const shuffled = filteredQuestions.sort(() => 0.5 - Math.random())
       const selectedQuestions = shuffled.slice(0, Math.min(config.questionCount, shuffled.length))
 
-      // Format questions properly using actual database fields
       const formattedQuestions = selectedQuestions.map((q) =>
         createQuestion({
           ...q,
@@ -129,18 +83,14 @@ export const MockTestGenerator = ({ onStartTest }) => {
     }
   }
 
-  const getAvailableQuestions = () => {
-    return availableQuestions.length
-  }
+  const getAvailableQuestions = () => availableQuestions.length
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Mock Test Generator</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Create customized practice tests with smart filtering and auto-generation
-        </p>
+        <p className="text-gray-600 dark:text-gray-400">Create customized tests from available PYQs</p>
       </div>
 
       {error && (
@@ -209,30 +159,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Topic Filters</h3>
-
-            {/* Topics */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                Topics (Optional)
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {allTopics.map((topic) => (
-                  <label key={topic} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.topics.includes(topic)}
-                      onChange={() => handleArrayToggle("topics", topic)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{topic}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Preview & Generate */}
@@ -263,16 +189,6 @@ export const MockTestGenerator = ({ onStartTest }) => {
                   {loading ? "Loading..." : `${getAvailableQuestions()} questions`}
                 </span>
               </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {config.topics.length > 0 && (
-                  <>
-                    <strong>Topics:</strong> {config.topics.join(", ")}
-                  </>
-                )}
-              </p>
             </div>
           </div>
 

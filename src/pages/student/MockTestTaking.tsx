@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ChevronLeftIcon, ChevronRightIcon, FlagIcon } from "@heroicons/react/24/outline"
 import { TestTimer } from "../../components/TestTimer"
 import { TestQuestion } from "../../components/TestQuestion"
+import { gradeAnswersWithGemini, type GradedAnswer } from "../../services/ai-grader"
 
 export const MockTestTaking = ({ questions, duration, onSubmitTest, onExitTest }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -11,19 +12,46 @@ export const MockTestTaking = ({ questions, duration, onSubmitTest, onExitTest }
   const [flaggedQuestions, setFlaggedQuestions] = useState(new Set())
   const [startTime] = useState(Date.now())
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
+  const [grading, setGrading] = useState(false)
 
   const handleAnswerChange = (questionId, answer) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }))
   }
 
-  const handleTimeUp = () => {
+  const gradeAndSubmit = async () => {
+    setGrading(true)
     const timeSpent = Math.round((Date.now() - startTime) / (1000 * 60))
-    onSubmitTest(answers, timeSpent)
+
+    // Prepare inputs for AI grader
+    const qaInputs = questions.map((q) => ({
+      id: q.id,
+      questionText: q.question,
+      subject: q.subject,
+      type: q.type,
+      correctAnswer: q.correctAnswer || null,
+      marks: q.marks,
+    }))
+
+    const graded: GradedAnswer[] = await gradeAnswersWithGemini(qaInputs, answers)
+
+    onSubmitTest(answers, timeSpent, {
+      graded,
+      summary: {
+        correct: graded.filter((g) => g.correct).length,
+        total: questions.length,
+        percentage:
+          questions.length > 0 ? Math.round((graded.filter((g) => g.correct).length / questions.length) * 100) : 0,
+      },
+    })
+    setGrading(false)
+  }
+
+  const handleTimeUp = () => {
+    gradeAndSubmit()
   }
 
   const handleSubmit = () => {
-    const timeSpent = Math.round((Date.now() - startTime) / (1000 * 60))
-    onSubmitTest(answers, timeSpent)
+    gradeAndSubmit()
   }
 
   const toggleFlag = (questionIndex) => {
@@ -60,12 +88,13 @@ export const MockTestTaking = ({ questions, duration, onSubmitTest, onExitTest }
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Answered: {getAnsweredCount()}/{questions.length}
             </div>
-            <TestTimer duration={duration} onTimeUp={handleTimeUp} isActive={true} />
+            <TestTimer duration={duration} onTimeUp={handleTimeUp} isActive={!grading} />
             <button
               onClick={() => setShowSubmitConfirm(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-60"
+              disabled={grading}
             >
-              Submit Test
+              {grading ? "Grading..." : "Submit Test"}
             </button>
           </div>
         </div>
@@ -176,14 +205,16 @@ export const MockTestTaking = ({ questions, duration, onSubmitTest, onExitTest }
               <button
                 onClick={() => setShowSubmitConfirm(false)}
                 className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                disabled={grading}
               >
                 Continue Test
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-60"
+                disabled={grading}
               >
-                Submit
+                {grading ? "Grading..." : "Submit"}
               </button>
             </div>
           </div>
