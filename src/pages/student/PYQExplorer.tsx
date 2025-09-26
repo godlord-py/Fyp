@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline"
-import { QuestionCard } from "./QuestionCard"
+import { QuestionCard } from "../../components/QuestionCard"
 import { FilterPanel } from "../../components/FilterPanel"
 import { AIAssistant } from "../../components/AIAssistant"
 import { paperAPI } from "../../services/api"
