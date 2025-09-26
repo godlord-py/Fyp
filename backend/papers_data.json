@@ -4,23 +4,18 @@
       "college_name": "G. H. Raisoni College of Engineering, Nagpur",
       "is_autonomous": true,
       "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
+      "session": "Summer-2023",
       "course_level": "B.Tech./B.E.",
-      "term": "Third & Fifth Term",
-      "subject_code": "UCSL301",
-      "subject_name": "Database Management System",
+      "term": "Fourth Term B. Tech./B.E. (Computer Science & Engineering - AIML)",
+      "subject_code": "UAIL213",
+      "subject_name": "Introduction to Artificial Intelligence",
       "departments": [
-        "Computer Science & Engineering",
-        "Electronics Engineering",
-        "Electronics & Telecommunication Engineering",
-        "Information Technology",
-        "Artificial Intelligence",
-        "Data Science"
+        "Computer Science & Engineering - AIML"
       ],
       "duration_minutes": 150,
       "max_marks": 50,
       "instructions": [
-        "All questions carry marks as indicated.",
+        "All questions carry marks as indicated",
         "Assume suitable data wherever necessary.",
         "Due credit will be given to neatness and adequate dimensions.",
         "Illustrate your answer wherever necessary with the help of neat sketches.",
@@ -29,517 +24,58 @@
       "questions": [
         {
           "question_number": "1. a)",
-          "question_text": "Describe the overall architecture of DBMS with neat diagram.",
+          "question_text": "Identify two examples of Intelligent Agents in everyday life and explain how they interact with their environment and what are the key components of the agent?",
           "marks": 5,
           "course_outcome": "CO1"
         },
         {
           "question_number": "1. b)",
-          "question_text": "List the various users of DBMS and explain its functions. Also explain the roles & responsibilities of DBA.",
+          "question_text": "For each of the following activities, give a PEAS description of the task environment\n1) A chatbot that provides customer support for a software company\n2) A robotic arm to pick and place items on conveyor belt\n3) A drone for monitoring crops\n4) Online recommender system for books recommendation\n5) Autonomous car",
           "marks": 5,
           "course_outcome": "CO1"
         },
         {
           "question_number": "2. a)",
-          "question_text": "Consider the relational schema:\nLives (person_name, street, city)\nWorks (person_name, company_name, salary)\nLocated-in (company_name, city)\nManages (person_name, manager_name)\nWrite SQL to find the following.\ni) Find the name, street, city of all employees who work for 'IBM' and earn more than Rs. 15,000/-\nii) Find the name of all companies located in 'Nagpur'.\niii) Find those who lives and works in same city.",
+          "question_text": "Perform the A* Algorithm on the following figure to reach from S to G. Explicitly write down the queue at each step.",
+          "image_description": "A weighted graph with nodes S, A, B, C, D, E, F, G representing a search problem for A* algorithm.",
           "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "2. b)",
-          "question_text": "Define the following terms: (i) Candidate keys (ii) Super key (iii) Composite key (iv) Primary key (v) Foreign key.",
+          "question_text": "Differentiate between IDDFS and DFS Algorithm with example",
           "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "3. a)",
-          "question_text": "Elaborate Normalization. Explain 1NF, 2NF and 3NF.",
+          "question_text": "Enlist the operators used in Genetic Algorithms. Solve the 4 queens problem using Genetic Algorithms.(2 generations)",
           "marks": 5,
           "course_outcome": "CO3"
         },
         {
-          "question_number": "3. b)",
-          "question_text": "Compute the closure of the following set F of FD's for the relation R=(A,B,C,D,E) where F = {A->BC, CD->E, B->D, E->A}. List all candidate keys of R.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "4. a)",
-          "question_text": "State the reasons for the occurrence of deadlock. Suggest its prevention method.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. b)",
-          "question_text": "What is locking protocol? Explain two phase locking protocol with the help of example.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. OR c)",
-          "question_text": "Give the case study on NoSQL.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "5. a)",
-          "question_text": "Explain the different phases involved in Query processing.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        },
-        {
-          "question_number": "5. b)",
-          "question_text": "What is Query Optimization? Give various techniques of Query Optimization.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        }
-      ]
-    },
-    {
-      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
-      "is_autonomous": true,
-      "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
-      "course_level": "B.Tech./B.E.",
-      "term": "Third Term",
-      "subject_code": "UCSL206/BCSL211",
-      "subject_name": "Operating Systems (Elective-I)",
-      "departments": [
-        "Information Technology",
-        "Artificial Intelligence",
-        "Data Science",
-        "CSE-IOT",
-        "Electronics & Telecommunication Engineering"
-      ],
-      "duration_minutes": 150,
-      "max_marks": 50,
-      "instructions": [
-        "All questions are compulsory and carry marks as indicated.",
-        "Assume suitable data wherever necessary.",
-        "Due credit will be given to neatness and adequate dimensions.",
-        "Illustrate your answer wherever necessary with the help of neat sketches.",
-        "Use of non-programmable calculator is permitted."
-      ],
-      "questions": [
-        {
-          "question_number": "1. a)",
-          "question_text": "Discuss the services provided by the operating system for efficient system operation.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "1. b)",
-          "question_text": "Explain the System call with suitable example.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "2. a)",
-          "question_text": "Illustrate the transitional changes in process states diagram when blocked suspended and ready suspended states are included.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "2. b)",
-          "question_text": "Consider the set of 5 processes whose arrival time and burst time are given below. If the CPU scheduling policy is Round Robin with time quantum = 2 unit, calculate the average waiting time and average turnaround time.",
-          "table_data": {
-            "headers": ["Process Id", "Arrival Time", "Burst Time"],
-            "rows": [
-              ["P1", "0", "5"],
-              ["P2", "1", "3"],
-              ["P3", "2", "1"],
-              ["P4", "3", "2"],
-              ["P5", "4", "3"]
-            ]
-          },
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "3. a)",
-          "question_text": "Discuss the use of semaphores to deal with n-process critical section problem with a suitable example.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "3. b)",
-          "question_text": "Explain the Producer-Consumer Problem.",
+          "question_number": "3. b) OR",
+          "question_text": "How does the Simulated Annealing algorithm differ from other optimization algorithms, such as hill climbing or gradient descent? OR Find a solution to the following 8 puzzle problem using Start State: [[4,1,2],[6, ,3],[7,5,8]] Goal State: [[1,2,3],[4,5,6],[7,8, ]]. Consider Heuristic function as number of misplaced tiles.",
           "marks": 5,
           "course_outcome": "CO3"
         },
         {
           "question_number": "4. a)",
-          "question_text": "Explain the Resource-Allocation Graph Algorithm for deadlock prevention.",
+          "question_text": "Consider a game tree shown below. Calculate the values at the root of the tree using minimax algorithm. Perform alpha beta pruning to show which nodes will be pruned.",
+          "image_description": "A game tree with MAX and MIN levels for minimax algorithm with alpha-beta pruning.",
           "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "4. b)",
-          "question_text": "A single processor system has three resource types X, Y and Z, which are shared by three processes. There are 5 units of each resource type. Consider the following scenario, where the column 'alloc' denotes the number of units of each resource type allocated to each process, and the column 'request' denotes the number of units of each resource type requested by a process in order to complete execution. Which of these processes will finish LAST?",
-          "table_data": {
-            "headers": ["Process", "Alloc (X,Y,Z)", "Request (X,Y,Z)"],
-            "rows": [
-              ["P0", "[1,2,1]", "[1,1,3]"],
-              ["P1", "[2,0,1]", "[0,1,2]"],
-              ["P2", "[2,2,1]", "[1,2,0]"]
-            ]
-          },
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "5. a)",
-          "question_text": "State and explain various Page Replacement Algorithms used for Page Replacement.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        },
-        {
-          "question_number": "5. b)",
-          "question_text": "Differentiate between:\ni. Paging and segmentation\nii. Logical address and physical address",
-          "marks": 5,
-          "course_outcome": "CO5"
-        }
-      ]
-    },
-    {
-      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
-      "is_autonomous": true,
-      "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
-      "course_level": "B.Tech./B.E.",
-      "term": "Third Term",
-      "subject_code": "UAIL205",
-      "subject_name": "Introduction to Data Science",
-      "departments": [
-        "Information Technology",
-        "Data Science"
-      ],
-      "duration_minutes": 150,
-      "max_marks": 50,
-      "instructions": [
-        "All questions carry marks as indicated.",
-        "Assume suitable data wherever necessary.",
-        "Due credit will be given to neatness and adequate dimensions.",
-        "Illustrate your answer wherever necessary with the help of neat sketches.",
-        "Use of non-programmable calculator is permitted."
-      ],
-      "questions": [
-        {
-          "question_number": "1. a)",
-          "question_text": "State and Explain the Evolution of Data Science.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "1. b)",
-          "question_text": "Discuss the Data Science Life Cycle.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "2. a)",
-          "question_text": "Explain the various strategies of data collection techniques.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "2. b)",
-          "question_text": "Elaborate and discuss the design steps to handle Missing data with an example.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "3. a)",
-          "question_text": "Calculate the mean deviation and coefficient of mean deviation from (i) the mean, (ii) the median, in the ungrouped data case, of the following set of examination marks: Xi(45, 32, 37, 46, 39, 36, 41, 48, 36).",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "3. b)",
-          "question_text": "State the measures commonly employed to define Skewness and Kurtosis. What aspects of the frequency curve are measured by them?",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "4. a)",
-          "question_text": "Explain the Simple and Multiple Regression method.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. b)",
-          "question_text": "What are the considerations in the fitting polynomial model?",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "5. a)",
-          "question_text": "Explain Evaluation Metrics in Model Evaluation?",
-          "marks": 5,
-          "course_outcome": "CO5"
-        },
-        {
-          "question_number": "5. b)",
-          "question_text": "Explain Under Fitting and Model Selection in the Model Evaluation.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        }
-      ]
-    },
-    {
-      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
-      "is_autonomous": true,
-      "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
-      "course_level": "B.Tech./B.E.",
-      "term": "Third/Fifth Term",
-      "subject_code": "UITL308/UITL301",
-      "subject_name": "Software Engineering for Project Management",
-      "departments": [
-        "CSE",
-        "IT",
-        "DS",
-        "AI",
-        "AIML"
-      ],
-      "duration_minutes": 150,
-      "max_marks": 50,
-      "instructions": [
-        "All questions carry marks as indicated.",
-        "Assume suitable data wherever necessary.",
-        "Due credit will be given to neatness and adequate dimensions.",
-        "Illustrate your answer wherever necessary with the help of neat sketches.",
-        "Use of non-programmable calculator is permitted."
-      ],
-      "questions": [
-        {
-          "question_number": "1. a)",
-          "question_text": "Explain with neat diagram Software process Layered Technology.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "1. b)",
-          "question_text": "Explain Characteristics of Software Engineering.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "2. a)",
-          "question_text": "Explain with neat diagram the business process model.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "2. b)",
-          "question_text": "Explain cohesion and Coupling. Explain different types with detailed example.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "3. a)",
-          "question_text": "Explain the process of CMM.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "3. b)",
-          "question_text": "Explain Risk and its types?",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "4. a)",
-          "question_text": "Explain the role of architectural style and patterns.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. b)",
-          "question_text": "What is Project Estimation? Discuss about FP based and LOC based estimation.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "5. a)",
-          "question_text": "What is testing? What is the role of testing in software Engineering.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        },
-        {
-          "question_number": "5. b)",
-          "question_text": "Difference between Black Box & White box Testing.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        }
-      ]
-    },
-    {
-      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
-      "is_autonomous": true,
-      "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
-      "course_level": "B.Tech./B.E.",
-      "term": "Fifth Term",
-      "subject_code": "UAIL210/BAIL362",
-      "subject_name": "Business Intelligence (Elective-II)",
-      "departments": [
-        "Artificial Intelligence",
-        "Information Technology",
-        "Data Science"
-      ],
-      "duration_minutes": 150,
-      "max_marks": 50,
-      "instructions": [
-        "All questions carry marks as indicated.",
-        "Assume suitable data wherever necessary.",
-        "Due credit will be given to neatness and adequate dimensions.",
-        "Illustrate your answer wherever necessary with the help of neat sketches.",
-        "Use of non-programmable calculator is permitted."
-      ],
-      "questions": [
-        {
-          "question_number": "1.",
-          "question_text": "Illustrate BI Architecture in detail using suitable diagram.",
-          "marks": 10,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "2. a) OR",
-          "question_text": "Discuss data analytic methods with tools.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "2. b)",
-          "question_text": "List various Application of BI.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "3. a)",
-          "question_text": "Elaborate data science process with neat labeled diagram.",
-          "marks": 4,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "3. b)",
-          "question_text": "Describe regression and discuss different types of regression.",
-          "marks": 6,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "4. a)",
-          "question_text": "Summarize the role of a business intelligence analyst.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "4. b)",
-          "question_text": "Give the list top data visualization tools and explain any two tools.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "5. a)",
-          "question_text": "List various types of Dashboard with its use.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "5. b)",
-          "question_text": "Discuss how to record and Analyze Performance of dashboard.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "6. a)",
-          "question_text": "Show how business metrics and KPIs works.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        },
-        {
-          "question_number": "6. b)",
-          "question_text": "Construct cube using Microsoft Excel, discuss the process.",
-          "marks": 5,
-          "course_outcome": "CO5"
-        }
-      ]
-    },
-    {
-      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
-      "is_autonomous": true,
-      "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
-      "course_level": "B.Tech./B.E.",
-      "term": "Fifth Term",
-      "subject_code": "UAIL304",
-      "subject_name": "Information Retrieval and Text Mining",
-      "departments": [
-        "Data Science",
-        "Information Technology"
-      ],
-      "duration_minutes": 150,
-      "max_marks": 50,
-      "instructions": [
-        "All questions carry marks as indicated.",
-        "Assume suitable data wherever necessary.",
-        "Due credit will be given to neatness and adequate dimensions.",
-        "Illustrate your answer wherever necessary with the help of neat sketches.",
-        "Use of non-programmable calculator is permitted."
-      ],
-      "questions": [
-        {
-          "question_number": "1. a)",
-          "question_text": "Sketch the block diagram of Information Retrieval system and explain each block in details.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "1. b)",
-          "question_text": "Illustrate inverted indexing and its significance in IR.",
-          "marks": 5,
-          "course_outcome": "CO1"
-        },
-        {
-          "question_number": "2. a)",
-          "question_text": "Write all the methodologies of text processing and query processing.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "2. b)",
-          "question_text": "Describe Spam Filtering, state its types with example.",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "3. a)",
-          "question_text": "Comment on N-gram Model and its indices.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "3. b)",
-          "question_text": "State the Heap's Law and Zipf's Law in detail and write its applications.",
-          "marks": 5,
-          "course_outcome": "CO3"
-        },
-        {
-          "question_number": "4. a)",
-          "question_text": "Describe the term Index Compression and Extreme Compression.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. b)",
-          "question_text": "State the term spelling correction and explain the edit distance matrix algorithm for spelling correction.",
+          "question_text": "With reference to the map coloring problem, explain what heuristics can be considered to color the map so that no two neighboring states have the same color.",
+          "image_description": "Map of Australia showing states to be colored.",
           "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "5.",
-          "question_text": "Write a short note on (Any Two):\ni) Micro- and macro-averaging\nii) Sentiment analysis on the Web\niii) Text Classification and Text Mining",
+          "question_text": "Harry installed a new burglar alarm at his home to detect burglary. The alarm reliably responds at detecting a burglary but also responds for minor earthquakes. Harry has two neighbors David and Sophia, who have taken a responsibility to inform Harry at work when they hear the alarm. David always calls Harry when he hears the alarm, but sometimes he got confused with the phone ringing and calls at that time too. On the other hand, Sophia likes to listen to high music, so sometimes she misses to hear the alarm. Calculate the probability that alarm has sounded, but there is neither a burglary, nor an earthquake occurred, and David and Sophia both called Harry. Given Burglary(B), Earthquake(E), David Calls(D) Sophia Call(S), Alarm(A) and probabilities P(B)=0.01, P(E)=0.002, P(A/B,E)=0.95, P(A/B,~E)=0.94, P(A/~B,E)=0.25, P(A/~B~E)=0.001, P(D/A)=0.90, P(D/~A)=0.05, P(S/A)=0.70, P(S/~A)=0.01",
           "marks": 10,
           "course_outcome": "CO5"
         }
@@ -549,98 +85,116 @@
       "college_name": "G. H. Raisoni College of Engineering, Nagpur",
       "is_autonomous": true,
       "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
-      "course_level": "B.Tech./B.E.",
-      "term": "Third Term",
-      "subject_code": "UECL205",
-      "subject_name": "Analog Integrated Circuits",
+      "session": "Summer-2023",
+      "course_level": "B.Tech.",
+      "term": "Fourth Term B. Tech. (DSY) (AI/CSE-AIML/DS)",
+      "subject_code": "UAIL_202/UAIL202",
+      "subject_name": "Machine Learning Algorithms",
       "departments": [
-        "Electronics Engineering",
-        "Electronics & Telecommunication Engineering",
-        "IT",
-        "DS",
-        "Computer Science & Engineering - IOT",
-        "CS"
+        "AI",
+        "CSE-AIML",
+        "DS"
       ],
       "duration_minutes": 150,
       "max_marks": 50,
       "instructions": [
-        "All questions carry marks as indicated.",
-        "Assume suitable data wherever necessary & illustrate your answer wherever necessary with the help of neat sketches.",
+        "All questions carry marks as indicated",
+        "Assume suitable data wherever necessary.",
         "Due credit will be given to neatness and adequate dimensions.",
+        "Illustrate your answer wherever necessary with the help of neat sketches.",
         "Use of non-programmable calculator is permitted."
       ],
       "questions": [
         {
           "question_number": "1. a)",
-          "question_text": "Analyze DIBO differential amplifier circuit. Derive expression for gain & input resistance.",
+          "question_text": "Differentiate between supervised and unsupervised learning techniques.",
           "marks": 5,
           "course_outcome": "CO1"
         },
         {
           "question_number": "1. b)",
-          "question_text": "For SIBO differential amplifier shown in figure. Determine (a) Operating point, (b) Voltage gain, (c) Input Resistance, (d) Max. peak to peak output voltage. Assume β_ac=β_dc=100, V_BE=V_D1=0.7V, V_Z=6.2V & I_z=41mA.",
-          "image_description": "Circuit diagram of a Single-Input, Balanced-Output (SIBO) differential amplifier with transistors Q1, Q2, Q3, diodes D1, D2 and resistors R1, R2, R3, R4. Supply voltages are Vcc=10V and Vee=-10V.",
+          "question_text": "Elaborate the concept of Hypothesis Space and Inductive bias",
           "marks": 5,
           "course_outcome": "CO1"
         },
         {
-          "question_number": "2. (Solve Any Two) a)",
-          "question_text": "Design inverting amplifier and derive expression to find gain of inverting amplifier with feedback. The op-amp having the following parameter is connected as inverting amplifier with R1=1kΩ & Rf=10kΩ, A=200000, Ri=2MΩ, Ro=75Ω, f0=5hz & supply voltage=±15v, output voltage swing=±13v. Compute the value of Af & Rif.",
+          "question_number": "2. a)",
+          "question_text": "Identify the first splitting attribute for decision tree by using Decision Tree algorithm with the following dataset.",
+          "table_data": {
+            "headers": ["Major", "Experience", "Tie", "Hired?"],
+            "rows": [
+              ["CS", "Programming", "Pretty", "NO"],
+              ["CS", "Programming", "Pretty", "NO"],
+              ["CS", "Management", "Pretty", "YES"],
+              ["CS", "Management", "Ugly", "YES"],
+              ["Business", "Programming", "Pretty", "YES"],
+              ["Business", "Programming", "Ugly", "YES"],
+              ["Business", "Management", "Pretty", "NO"],
+              ["Business", "Management", "Pretty", "NO"]
+            ]
+          },
           "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "2. b)",
-          "question_text": "Design summer amplifier circuit to solve following equation: V_o = 4V_1 + 5V_2 - 2V_3",
-          "marks": 5,
-          "course_outcome": "CO2"
-        },
-        {
-          "question_number": "2. c)",
-          "question_text": "Explain how output voltage Vo is calculated in ideal differentiator circuit. How problem of high frequency noise is overcome in differentiator?",
+          "question_text": "Explain Logistics regression with an example.",
           "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "3. a)",
-          "question_text": "Prove f_0 = 1 / (2π√(6)RC) in RC Phase Shift Oscillator.",
+          "question_text": "Explain Naïve Bayes learning with the help of suitable example?",
           "marks": 5,
           "course_outcome": "CO3"
         },
         {
           "question_number": "3. b)",
-          "question_text": "Determine the order of low pass butterworth filter that provides 40db attenuation at f/f_H = 2.",
+          "question_text": "How Support Vector Machine algorithm is useful for categories the data?",
           "marks": 5,
           "course_outcome": "CO3"
         },
         {
-          "question_number": "4. (Solve Any Two) a)",
-          "question_text": "Design circuit to convert AC signal to full wave DC signal. Also explain working of this circuit with waveforms.",
+          "question_number": "4. a)",
+          "question_text": "Consider the following dataset and solve the KNN algorithms, where K=3. Now, let P1=3 and P2=7, so it will belong in which class? Explain in details.",
+          "table_data": {
+            "headers": ["P1", "P2", "Class"],
+            "rows": [
+              ["7", "7", "False"],
+              ["7", "4", "False"],
+              ["3", "4", "True"],
+              ["1", "4", "True"]
+            ]
+          },
           "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "4. b)",
-          "question_text": "Design positive clipper. Explain its working with proper waveforms.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. c)",
-          "question_text": "For Schmitt trigger circuit, consider R1=100Ω, R2=56kΩ, Vin=1Vpp sine wave and opamp is of type 741 with supply voltage ±15V. Determine threshold voltages, Vut, Vlt & draw output waveform. Also draw hysteresis curve.",
+          "question_text": "Solve the problem using PCA Algorithms. Find the Covariance Matrix, Eigen Values, Eigen Vector.",
+          "table_data": {
+            "headers": ["X", "Y"],
+            "rows": [
+              ["4", "3"],
+              ["3", "5"],
+              ["2", "1"],
+              ["5", "6"],
+              ["6", "7"],
+              ["7", "8"]
+            ]
+          },
           "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "5. a)",
-          "question_text": "Draw a block schematic of PLL IC NE/SE 565 and describe its functions.",
+          "question_text": "What are different type of clustering? Explain with an example all distance measure used in K-Means Algorithm.",
           "marks": 5,
           "course_outcome": "CO5"
         },
         {
           "question_number": "5. b)",
-          "question_text": "Design timer 555 used as a astable multivibrator to operate at 1KHz. Duty cycle is 40%. The timing capacitor used is 0.01µF. Assume necessary data required if any.",
+          "question_text": "Explain ensemble learning with suitable example.",
           "marks": 5,
           "course_outcome": "CO5"
         }
@@ -650,103 +204,361 @@
       "college_name": "G. H. Raisoni College of Engineering, Nagpur",
       "is_autonomous": true,
       "examination_name": "End Semester Examination",
-      "session": "Winter-2022",
+      "session": "Summer-2023",
       "course_level": "B.Tech./B.E.",
-      "term": "Third Term",
-      "subject_code": "UCSL201",
-      "subject_name": "Data Structure and Algorithms",
+      "term": "Fourth Term B. Tech./B. E. (DSY) (Artificial Intelligence)",
+      "subject_code": "UCSL324",
+      "subject_name": "User Interface Design and User Experience (Elective - I)",
       "departments": [
-        "Computer Science & Engineering",
-        "Artificial Intelligence",
-        "Information Technology",
-        "Electronics and Telecommunication Engineering",
-        "Electronics Engineering",
-        "Electrical Engineering",
-        "Data Science",
-        "Computer Science & Engineering -AIML",
-        "Computer Science & Engineering - IoT",
-        "Computer Science & Engineering- Cyber Security"
+        "Artificial Intelligence"
       ],
       "duration_minutes": 150,
       "max_marks": 50,
       "instructions": [
-        "All questions carry marks as indicated.",
+        "All questions carry marks as indicated",
         "Assume suitable data wherever necessary.",
         "Due credit will be given to neatness and adequate dimensions.",
         "Illustrate your answer wherever necessary with the help of neat sketches.",
-        "Use of non-programmable calculator is permitted.",
-        "Solve any one from Q. No 5 b) or Q.No. 5 c)."
+        "Use of non-programmable calculator is permitted."
       ],
       "questions": [
         {
           "question_number": "1. a)",
-          "question_text": "Find time function and Time complexity for following function:\nfor(i=0; i<n; i++)\n{\n  for(j=0; j<i; j++)\n  {\n    Statements;\n  }\n}",
-          "marks": 2,
+          "question_text": "Define User Interface Design. Explain importance and benefits of a good design?",
+          "marks": 5,
           "course_outcome": "CO1"
         },
         {
           "question_number": "1. b)",
-          "question_text": "Find time function and Time complexity for following function:\nP=0;\nfor(i=1; i<n; i=i*2)\n{\n  P++;\n}\nfor(j=1; j<P; j=j*2)\n{\n  Statements;\n}",
-          "marks": 2,
+          "question_text": "Elaborate the characteristics of graphical user interface?",
+          "marks": 5,
           "course_outcome": "CO1"
-        },
-        {
-          "question_number": "1. c)",
-          "question_text": "Write an algorithm for bubble sort also write a program to Implement using array.",
-          "marks": 6,
-          "course_outcome": "CO2"
         },
         {
           "question_number": "2. a)",
-          "question_text": "Define Data Structure? List different type of data structure and operations performed on Data Structures.",
-          "marks": 4,
-          "course_outcome": "CO1"
+          "question_text": "What is the functions of user design process?",
+          "marks": 5,
+          "course_outcome": "CO2"
         },
         {
           "question_number": "2. b)",
-          "question_text": "Implement the Stack using array which will take 10 integers as input. Insert even elements in STACK1 and odd elements in STACK2.",
-          "marks": 6,
+          "question_text": "Describe Usability Engineering and Task centered approaches in web designing?",
+          "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "3. a)",
-          "question_text": "Write note on circular linked list with example.",
-          "marks": 4,
+          "question_text": "Illustrate the structure of Menus with example?",
+          "marks": 5,
           "course_outcome": "CO3"
         },
         {
           "question_number": "3. b)",
-          "question_text": "Create a single linked list for train reservation system which have all the train_id record of a train. The linked list must contain minimum three train_id. Perform the following operations:\na) Delete a train_id at any position in a given record\nb) View all the train_id stored in a record",
-          "marks": 6,
+          "question_text": "Explain Web systems device based controls in Windows?",
+          "marks": 5,
           "course_outcome": "CO3"
         },
         {
           "question_number": "4. a)",
-          "question_text": "Discuss the advantages and disadvantages of linked list over the array.",
-          "marks": 4,
+          "question_text": "In App design how to use prototyping tools and principles?",
+          "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "4. b)",
-          "question_text": "What is Binary Trees? Write a program to Implement Insert & Delete an element in binary tree.",
-          "marks": 6,
+          "question_text": "Describe advantages and disadvantages of low fidelity and high fidelity?",
+          "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "5. a)",
-          "question_text": "Mention the Graphs in Data Structures. Give terminologies involved in Graph. Elaborate with examples of traversing in graph.",
+          "question_text": "Describe different type of online tools available for making a web designing using recent trend.",
+          "marks": 5,
+          "course_outcome": "CO5"
+        },
+        {
+          "question_number": "5. b)",
+          "question_text": "As a UIUX designer write significance of various controls like Radio button, Slide bars, Check Boxes, Progress Bars and Tools tips?",
+          "marks": 5,
+          "course_outcome": "CO5"
+        }
+      ]
+    },
+    {
+      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
+      "is_autonomous": true,
+      "examination_name": "End Semester Examination",
+      "session": "Summer-2023",
+      "course_level": "B.Tech./B.E.",
+      "term": "Fourth Term B. Tech. / B.E. (DSY) (Artificial Intelligence / Data Science)",
+      "subject_code": "UAIL203",
+      "subject_name": "Data Warehousing and ETL (Elective-I)",
+      "departments": [
+        "Artificial Intelligence",
+        "Data Science"
+      ],
+      "duration_minutes": 150,
+      "max_marks": 50,
+      "instructions": [
+        "All questions carry marks as indicated",
+        "Assume suitable data wherever necessary.",
+        "Due credit will be given to neatness and adequate dimensions.",
+        "Illustrate your answer wherever necessary with the help of neat sketches.",
+        "Use of non-programmable calculator is permitted."
+      ],
+      "questions": [
+        {
+          "question_number": "1. a)",
+          "question_text": "Explain need of Data Preprocessing? Which steps involved in data preprocessing?",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "1. b)",
+          "question_text": "Discuss Application of Data Warehousing and discuss it with details.",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "2. a)",
+          "question_text": "Illustrate the architecture of Data Warehousing.",
+          "marks": 5,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "2. b)",
+          "question_text": "Differentiate between Data Warehouse and Data Mart, with examples.",
+          "marks": 5,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "3. a)",
+          "question_text": "Elaborate Operational Data Store (ODS).",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "3. b)",
+          "question_text": "Explain Collecting Business Requirements for Data Warehouse Data Design with example.",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "4. a)",
+          "question_text": "Discuss the process: ETL. List the advantages and disadvantages of OLAP.",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "4. b)",
+          "question_text": "List the SQL features for Data Warehousing.",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "5. a)",
+          "question_text": "Describe the type of metadata that is maintained in a data warehouse.",
+          "marks": 5,
+          "course_outcome": "CO5"
+        },
+        {
+          "question_number": "5. b)",
+          "question_text": "List any three techniques of optimizing storage. Describe these briefly.",
+          "marks": 5,
+          "course_outcome": "CO5"
+        }
+      ]
+    },
+    {
+      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
+      "is_autonomous": true,
+      "examination_name": "End Semester Examination",
+      "session": "Summer-2023",
+      "course_level": "B.Tech./B.E.",
+      "term": "Fourth Term B. Tech./B.E. (DSY) (Artificial Intelligence / Information Technology/Data Science)",
+      "subject_code": "UCSL203",
+      "subject_name": "Formal Languages and Automata",
+      "departments": [
+        "Artificial Intelligence",
+        "Information Technology",
+        "Data Science"
+      ],
+      "duration_minutes": 150,
+      "max_marks": 50,
+      "instructions": [
+        "All questions carry marks as indicated",
+        "Assume suitable data wherever necessary.",
+        "Due credit will be given to neatness and adequate dimensions.",
+        "Illustrate your answer wherever necessary with the help of neat sketches.",
+        "Use of a non-programmable calculator is permitted."
+      ],
+      "questions": [
+        {
+          "question_number": "1. a)",
+          "question_text": "Elaborate and explain Chomsky hierarchy with example in detail.",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "1. b)",
+          "question_text": "Construct DFA for the language accepting strings starting with '101' with Transition Table.",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "2. a)",
+          "question_text": "Design an NFA with Σ={0,1} in which double '1' is followed by double '0'.",
+          "marks": 5,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "2. b)",
+          "question_text": "Minimize the given DFA.",
+          "image_description": "A Deterministic Finite Automaton (DFA) with states q0, q1, q2, q3, q4 for minimization.",
+          "marks": 5,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "3. a) OR",
+          "question_text": "Check the Ambiguity in the following Grammar and justify. E -> E + E | E * E | id",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "3. b)",
+          "question_text": "For the given Context free grammar reduce the following grammar. S -> aBDh, B -> A, A -> Bbc | b, D -> dD",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "3. c)",
+          "question_text": "Design a PDA for accepting a language {x ∈ {a,b}* : x = wcw^R for w ∈ {a,b}*}",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "4. a)",
+          "question_text": "Construct a Turing machine that recognizes the language L = {a^n b^n c^n | n >= 1}",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "4. b)",
+          "question_text": "Explain briefly the Halting problem.",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "5. a)",
+          "question_text": "Compare and Contrast recursive and recursively enumerable languages",
+          "marks": 5,
+          "course_outcome": "CO5"
+        },
+        {
+          "question_number": "5. b)",
+          "question_text": "What is Universal Turing Machine? Explain in detail.",
+          "marks": 5,
+          "course_outcome": "CO5"
+        }
+      ]
+    },
+    {
+      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
+      "is_autonomous": true,
+      "examination_name": "End Semester Examination",
+      "session": "Summer-2023",
+      "course_level": "B.Tech./B.E.",
+      "term": "Fourth / Sixth Term B. Tech./B. E. (CSE/CSE-AIML/CSE-CS/AI/IT/ME/ETRX/ETC)",
+      "subject_code": "UCSL205 & BCSL316 of 19-20 SCHEME",
+      "subject_name": "Design and Analysis of Algorithms",
+      "departments": [
+        "CSE",
+        "CSE-AIML",
+        "CSE-CS",
+        "AI",
+        "IT",
+        "ME",
+        "ETRX",
+        "ETC"
+      ],
+      "duration_minutes": 150,
+      "max_marks": 50,
+      "instructions": [
+        "All questions carry marks as indicated",
+        "assume suitable data wherever necessary.",
+        "Due credit will be given to neatness and adequate dimensions.",
+        "Illustrate your answer wherever necessary with the help of neat sketches.",
+        "Use of non-programmable calculator is permitted."
+      ],
+      "questions": [
+        {
+          "question_number": "1. a)",
+          "question_text": "Explain Complexity of Algorithm with different types in detail.",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "1. b)",
+          "question_text": "Prove that 6n^2 + 2n + 3 = O(n^2)",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "2. a)",
+          "question_text": "Explain Solution of recurrence relation using Generating functions Methods in details.",
+          "marks": 5,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "2. b)",
+          "question_text": "Why we use divide and conquer approach in designing algorithms & Explain its applications",
+          "marks": 5,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "3. a)",
+          "question_text": "Differentiate between Greedy and Dynamic approach.",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "3. b)",
+          "question_text": "Perform Job Sequencing with deadline on the given data. Write Optimal Schedule that gives maximum Profit and state the Maximum Profit.",
+          "table_data": {
+            "headers": ["Jobs", "Deadlines", "Profits"],
+            "rows": [
+              ["J1", "5", "200"],
+              ["J2", "3", "180"],
+              ["J3", "3", "190"],
+              ["J4", "2", "300"],
+              ["J5", "4", "120"],
+              ["J6", "2", "100"]
+            ]
+          },
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "4. a)",
+          "question_text": "Explain Optimal Binary Search Tree and Calculate minimum cost of tree for following key: Keys[] = {10, 12, 20}, Frequency[] = {34, 8, 50}",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "4. b)",
+          "question_text": "Calculate the Optimal Path of Graph by using Travelling Salesman problem. (Adjacency Matrix is Given)(Consider Graph Vertices as 1,2,3,4). Matrix: [[0, 9, 306, 11], [41, 0, 2, 654], [?, ?, 0, ?]]",
+          "marks": 5,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "5. a)",
+          "question_text": "Explain 8 Queen's Problem?",
           "marks": 4,
           "course_outcome": "CO5"
         },
         {
-          "question_number": "5. b) OR",
-          "question_text": "Emphasize on Spanning Trees. Write an algorithm for Minimum spanning tree.",
-          "marks": 6,
-          "course_outcome": "CO5"
-        },
-        {
-          "question_number": "5. c)",
-          "question_text": "Give the real life example for application of each data structure.",
+          "question_number": "5. b)",
+          "question_text": "Explain different traversal techniques used in algorithms with example.",
           "marks": 6,
           "course_outcome": "CO5"
         }
@@ -755,89 +567,168 @@
     {
       "college_name": "G. H. Raisoni College of Engineering, Nagpur",
       "is_autonomous": true,
-      "examination_name": "Vacation Examination",
-      "session": "Winter-2022",
+      "examination_name": "End Semester Examination",
+      "session": "Summer-2023",
       "course_level": "B.Tech./B.E.",
-      "term": "Third Term",
-      "subject_code": "UECL205-DSY",
-      "subject_name": "Analog Integrated Circuits",
+      "term": "Fourth Term B. Tech./B.E. (Artificial Intelligence / Data Science)",
+      "subject_code": "UAIL203-2",
+      "subject_name": "Data Warehousing and ETL (Elective-I)",
       "departments": [
-        "ETRX",
-        "ETC",
-        "CSE-IOT"
+        "Artificial Intelligence",
+        "Data Science"
       ],
       "duration_minutes": 150,
       "max_marks": 50,
       "instructions": [
-        "All questions carry marks as indicated.",
-        "Assume suitable data wherever necessary & illustrate your answer wherever necessary with the help of neat sketches.",
+        "All questions carry marks as indicated",
+        "Assume suitable data wherever necessary.",
         "Due credit will be given to neatness and adequate dimensions.",
+        "Illustrate your answer wherever necessary with the help of neat sketches.",
         "Use of non-programmable calculator is permitted."
       ],
       "questions": [
         {
           "question_number": "1. a)",
-          "question_text": "Design Constant Current bias circuit using zener diode and derive output current equation.",
+          "question_text": "Elaborate data warehouse components with neat labeled diagram.",
           "marks": 5,
           "course_outcome": "CO1"
         },
         {
           "question_number": "1. b)",
-          "question_text": "The following specification is given for the dual input, balanced output differential amplifier: R_C=2.2kΩ, R_E=4.7kΩ, R_in1=R_in2=50Ω, +V_cc=10V, -V_EE=-10V and V_BE=0.715V.\na) Determine the ICQ and V_CEQ values.\nb) Determine the voltage gain.\nc) Determine the input and output resistance.",
+          "question_text": "Name at least six characteristics or feature of Data Warehousing.",
           "marks": 5,
           "course_outcome": "CO1"
         },
         {
           "question_number": "2. a)",
-          "question_text": "Design Non-inverting amplifier and derive expression to find gain of non-inverting amplifier with feedback. The op-amp having the following parameter R1=2kΩ & Rf=20kΩ, A=200000, Ri=2MΩ, Ro=75Ω, f0=5hz & supply voltage=±15V, output voltage swing=±13v. Compute the value of Af & Rif.",
+          "question_text": "Differentiate: Data Warehouse and Data Mart.",
           "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "2. b)",
-          "question_text": "Explain how output voltage Vo is calculated in Basic Integrator circuit? Why practical Integrator is used in industry?",
+          "question_text": "Why data warehouse is the Nonvolatile?",
           "marks": 5,
           "course_outcome": "CO2"
         },
         {
           "question_number": "3. a)",
-          "question_text": "Design Wein Bridge oscillator using op-amp and explain its working.",
+          "question_text": "Show how Star Schema works.",
           "marks": 5,
           "course_outcome": "CO3"
         },
         {
           "question_number": "3. b)",
-          "question_text": "Design a low pass filter for a cut-off frequency 5 kHz with a pass band gain of 2. Using the frequency scaling technique, redesign the filter for a cut-off frequency of 1.6 kHz.",
+          "question_text": "Explain Advance dimensional Modeling.",
           "marks": 5,
           "course_outcome": "CO3"
         },
         {
-          "question_number": "4. (Solve Any Two) a)",
-          "question_text": "Design and explain square wave generator using opamp.",
+          "question_number": "4. a)",
+          "question_text": "Difference between ROLAP and MOLAP.",
           "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "4. b)",
-          "question_text": "Design positive clipper. Explain its working with proper waveforms.",
-          "marks": 5,
-          "course_outcome": "CO4"
-        },
-        {
-          "question_number": "4. c)",
-          "question_text": "For Schmitt trigger circuit, consider R1=120Ω, R2=47kΩ, Vin=1Vpp sine wave and opamp is of type 741 with supply Voltage ±15V. Determine threshold voltages, Vut, Vlt & draw output waveform.",
+          "question_text": "Describe OLAP and its operations.",
           "marks": 5,
           "course_outcome": "CO4"
         },
         {
           "question_number": "5. a)",
-          "question_text": "Draw Voltage regulator and describe its functions.",
+          "question_text": "Describe the type of metadata that is maintained in a data warehouse.",
           "marks": 5,
           "course_outcome": "CO5"
         },
         {
           "question_number": "5. b)",
-          "question_text": "Design timer 555 used as a astable multivibrator to operate at 2KHz. Duty cycle is 70%. The timing capacitor used is 0.01 µF. Assume necessary data required if any.",
+          "question_text": "List any three techniques of optimizing storage. Describe these briefly.",
+          "marks": 5,
+          "course_outcome": "CO5"
+        }
+      ]
+    },
+    {
+      "college_name": "G. H. Raisoni College of Engineering, Nagpur",
+      "is_autonomous": true,
+      "examination_name": "End Semester Examination",
+      "session": "Summer-2023",
+      "course_level": "B.Tech./B.E.",
+      "term": "Sixth Term B. Tech./B.E. (AI/DS)",
+      "subject_code": "UAIL303",
+      "subject_name": "Computer Vision and Deep Learning",
+      "departments": [
+        "AI",
+        "DS"
+      ],
+      "duration_minutes": 150,
+      "max_marks": 50,
+      "instructions": [
+        "All questions carry marks as indicated",
+        "Assume suitable data wherever necessary.",
+        "Due credit will be given to neatness and adequate dimensions.",
+        "Illustrate your answer wherever necessary with the help of neat sketches.",
+        "Use of non-programmable calculator is permitted."
+      ],
+      "questions": [
+        {
+          "question_number": "1. a)",
+          "question_text": "Discuss the steps of Image formation with neat diagram.",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "1. b)",
+          "question_text": "Elaborate the advantages of linear filtering.",
+          "marks": 5,
+          "course_outcome": "CO1"
+        },
+        {
+          "question_number": "2. a)",
+          "question_text": "List the role of Gradient descent in Deep Learning.",
+          "marks": 4,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "2. b) OR",
+          "question_text": "Explain Back propagation with suitable example. OR List and explain the historical trends in Deep Learning.",
+          "marks": 6,
+          "course_outcome": "CO2"
+        },
+        {
+          "question_number": "3. a)",
+          "question_text": "Write short notes on i) Alex net ii) Dense net",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "3. b)",
+          "question_text": "How Deep dream and Hallucination play an important role in computer vision?",
+          "marks": 5,
+          "course_outcome": "CO3"
+        },
+        {
+          "question_number": "4. a)",
+          "question_text": "What is Siamese network? Also discuss various types of loss in this network.",
+          "marks": 6,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "4. b) OR",
+          "question_text": "Elaborate the role of CNN for object detection. OR Write short notes on i) RCNN ii) YOLO",
+          "marks": 4,
+          "course_outcome": "CO4"
+        },
+        {
+          "question_number": "5. a)",
+          "question_text": "Discuss the advantages of Recurrent neural network.",
+          "marks": 5,
+          "course_outcome": "CO5"
+        },
+        {
+          "question_number": "5. b)",
+          "question_text": "Elaborate the role of attention model in computer vision.",
           "marks": 5,
           "course_outcome": "CO5"
         }
