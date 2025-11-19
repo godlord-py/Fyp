@@ -24,6 +24,12 @@ import { ManageTests } from "./pages/admin/ManageTests"
 import { ManageUsers } from "./pages/admin/ManageUsers"
 import Analytics from "./pages/admin/Analytics"
 import Settings from "./pages/admin/Settings"
+import ResumeBuilder from "./pages/student/ResumeBuilder"
+import { FlashcardGenerator } from "./pages/student/FlashcardGenerator"
+import { FlashcardLibrary } from "./pages/student/FlashcardLibrary"
+import GradePredictor from "./pages/student/GradePredictor"
+import { StudentLandingPage } from "./pages/student/LandingPage"
+import { Bookmarks } from "./components/Bookmarks"
 
 const AppRoutes: React.FC = () => {
   const { user } = useAuth()
@@ -48,14 +54,19 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<StudentDashboard />} />
+        <Route index element={<StudentLandingPage />} />
         <Route path="pyq" element={<PYQExplorer />} />
         <Route path="mock-test" element={<MockTestSystem />} />
         <Route path="mock-test/generator" element={<MockTestGenerator />} />
         <Route path="mock-test/take/:testId" element={<MockTestTaking />} />
         <Route path="summary" element={<SummarizationPage />} />
         <Route path="planner" element={<StudyPlanner />} />
-        
+        <Route path="resume-builder" element={<ResumeBuilder/>} />
+        <Route path="flashcards" element={<FlashcardGenerator/>} />
+        <Route path="flashcard-library" element={<FlashcardLibrary />} />
+        <Route path="grade-predict" element={<GradePredictor />} />
+        <Route path="bookmarks" element={<Bookmarks/>} />
+       
       </Route>
 
       {/* Admin Routes with Layout */}
@@ -73,6 +84,7 @@ const AppRoutes: React.FC = () => {
         <Route path="users" element={<ManageUsers />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="resume-builder" element={<ResumeBuilder/>} />
       </Route>
 
       {/* Default redirects */}

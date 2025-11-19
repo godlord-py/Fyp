@@ -1,8 +1,6 @@
-// Base configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
-const API_TIMEOUT = 30000 // 30 seconds timeout
+const API_TIMEOUT = 30000
 
-// Helper function to create fetch requests with timeout and error handling
 const fetchWithTimeout = async (url: string, options: RequestInit = {}) => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT)
@@ -43,7 +41,6 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}) => {
   }
 }
 
-// Helper function to handle JSON responses
 const handleJsonResponse = async (response: Response) => {
   try {
     return await response.json()
@@ -53,9 +50,7 @@ const handleJsonResponse = async (response: Response) => {
   }
 }
 
-// Paper API endpoints
 export const paperAPI = {
-  // Get all papers with optional filters
   getAllPapers: async (filters: any = {}) => {
     const params = new URLSearchParams()
 
@@ -73,13 +68,11 @@ export const paperAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Get paper by ID
   getPaperById: async (id: string) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/papers/${id}`)
     return await handleJsonResponse(response)
   },
 
-  // Get questions from papers with filters
   getQuestions: async (filters: any = {}) => {
     const params = new URLSearchParams()
 
@@ -106,13 +99,20 @@ export const paperAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Upload PDF file
+  getSolution: async (questionId: string) => {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/solutions/${questionId}`)
+      return await handleJsonResponse(response)
+    } catch (error) {
+      console.log(`No solution found in database for question ${questionId}`)
+      return null
+    }
+  },
+
   uploadPDF: async (file: File, onProgress?: (progress: number) => void) => {
     const formData = new FormData()
     formData.append("pdf", file)
 
-    // Note: Fetch API doesn't support upload progress natively
-    // For now, we'll simulate progress or use a different approach
     if (onProgress) {
       onProgress(0)
     }
@@ -120,9 +120,7 @@ export const paperAPI = {
     const response = await fetchWithTimeout(`${API_BASE_URL}/upload-pdf`, {
       method: "POST",
       body: formData,
-      headers: {
-        // Don't set Content-Type for FormData, let browser set it with boundary
-      } as any,
+      headers: {} as any,
     })
 
     if (onProgress) {
@@ -132,37 +130,31 @@ export const paperAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Get unique subjects
   getSubjects: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/subjects`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock subjects data")
       return ["Physics", "Chemistry", "Mathematics", "Computer Science", "Biology"]
     }
   },
 
-  // Get unique sessions/years
   getSessions: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/sessions`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock sessions data")
       return ["2024", "2023", "2022", "2021", "2020"]
     }
   },
 
-  // Get dashboard stats
   getDashboardStats: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/dashboard/stats`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock dashboard stats")
       return {
         totalPapers: 150,
@@ -173,15 +165,12 @@ export const paperAPI = {
     }
   },
 
-  // Get papers (alias for getAllPapers)
   getPapers: async (filters: any = {}) => {
     return await paperAPI.getAllPapers(filters)
   },
 }
 
-// Mock Test API endpoints
 export const mockTestAPI = {
-  // Generate mock test questions
   generateMockTest: async (config: any) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/mock-test/generate`, {
       method: "POST",
@@ -190,7 +179,6 @@ export const mockTestAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Save test results
   saveTestResults: async (testData: any) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/mock-test/results`, {
       method: "POST",
@@ -199,22 +187,18 @@ export const mockTestAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Get test history
   getTestHistory: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/mock-test/history`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock test history data")
       return []
     }
   },
 }
 
-// AI Summarization API endpoints
 export const summaryAPI = {
-  // Generate summary
   generateSummary: async (content: string, options: any = {}) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/summary/generate`, {
       method: "POST",
@@ -227,19 +211,16 @@ export const summaryAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Get saved summaries
   getSummaries: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/summaries`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock summaries data")
       return []
     }
   },
 
-  // Save summary
   saveSummary: async (summaryData: any) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/summaries`, {
       method: "POST",
@@ -248,7 +229,6 @@ export const summaryAPI = {
     return await handleJsonResponse(response)
   },
 
-  // Delete summary
   deleteSummary: async (id: string) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/summaries/${id}`, {
       method: "DELETE",
@@ -257,15 +237,12 @@ export const summaryAPI = {
   },
 }
 
-// Statistics API endpoints
 export const statsAPI = {
-  // Get dashboard statistics
   getDashboardStats: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/stats/dashboard`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock dashboard stats")
       return {
         totalQuestions: 2500,
@@ -276,13 +253,11 @@ export const statsAPI = {
     }
   },
 
-  // Get subject-wise statistics
   getSubjectStats: async () => {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/stats/subjects`)
       return await handleJsonResponse(response)
     } catch (error) {
-      // Return mock data if API is not available
       console.warn("Using mock subject stats")
       return {
         Physics: { questions: 500, averageScore: 75 },
@@ -295,7 +270,6 @@ export const statsAPI = {
   },
 }
 
-// Helper function for error handling
 export const handleApiError = (error: any) => {
   if (error.message.includes("Backend server is not running")) {
     return {
@@ -317,7 +291,6 @@ export const handleApiError = (error: any) => {
   }
 }
 
-// Default export for backward compatibility
 export default {
   get: async (url: string) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}${url}`)

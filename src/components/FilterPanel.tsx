@@ -65,7 +65,7 @@ export const FilterPanel = ({
       </div>
 
       {/* Topic Filter */}
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topic</label>
         <select
           value={filters.topic}
@@ -78,10 +78,10 @@ export const FilterPanel = ({
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       {/* Difficulty Filter */}
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Difficulty</label>
         <select
           value={filters.difficulty}
@@ -94,10 +94,10 @@ export const FilterPanel = ({
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       {/* Type Filter */}
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Question Type</label>
         <select
           value={filters.type}
@@ -116,7 +116,7 @@ export const FilterPanel = ({
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       {/* Important Only Toggle */}
       <div>

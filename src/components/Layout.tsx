@@ -15,6 +15,7 @@ import {
   CogIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline"
+import { Bolt, BookmarkIcon, CardSimIcon, CreditCard, FlagIcon, GraduationCap, LibraryBigIcon } from "lucide-react"
 
 export const Layout: React.FC = () => {
   const { user, logout } = useAuth()
@@ -27,12 +28,15 @@ export const Layout: React.FC = () => {
   }
 
   const studentNavItems = [
-    { path: "/student", icon: HomeIcon, label: "Dashboard" },
     { path: "/student/pyq", icon: BookOpenIcon, label: "PYQ Explorer" },
+    { path: "/student/bookmarks", icon: BookmarkIcon, label: "Bookmarks" },
     { path: "/student/mock-test", icon: ClipboardDocumentListIcon, label: "Mock Tests" },
     { path: "/student/summary", icon: DocumentTextIcon, label: "Summaries" },
     { path: "/student/planner", icon: CalendarIcon, label: "Study Planner" },
-    { path: "/student/profile", icon: UserIcon, label: "Profile" },
+    { path: "/student/resume-builder", icon: UserIcon, label: "Resume Builder" },
+    { path: "/student/flashcards", icon: CreditCard, label: "Flashcard Generator" },
+    { path: "/student/flashcard-library", icon: LibraryBigIcon, label: "Flashcard Library" },
+    { path: "/student/grade-predict", icon: GraduationCap, label: "Predict Grade" },
   ]
 
   const adminNavItems = [

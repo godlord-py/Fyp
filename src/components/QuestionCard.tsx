@@ -8,24 +8,46 @@ import {
   TagIcon,
   SparklesIcon,
   ClipboardDocumentListIcon,
+  BookmarkIcon,
 } from "@heroicons/react/24/outline"
-import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid"
+import { StarIcon as StarIconSolid, BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid"
 import { getDifficultyColor, getTypeLabel, truncateText, storage } from "../utils/helpers"
 import { generateSolutionForQuestion, SOLUTION_STORAGE_PREFIX } from "../services/solution-service"
+import { bookmarkService } from "../services/bookmark-service"
 
 export const QuestionCard = ({ question, onToggleImportant }) => {
   const [expanded, setExpanded] = useState(false)
   const [solution, setSolution] = useState<string | null>(null)
   const [showSolution, setShowSolution] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isBookmarked, setIsBookmarked] = useState(false)
 
   useEffect(() => {
     const cached = storage.get(`${SOLUTION_STORAGE_PREFIX}${question.id}`, null)
     if (cached) setSolution(cached)
+    
+    const bookmarked = bookmarkService.isBookmarked(question.id)
+    setIsBookmarked(bookmarked)
+    
+    const handleStorageChange = () => {
+      const updated = bookmarkService.isBookmarked(question.id)
+      setIsBookmarked(updated)
+    }
+    window.addEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
   }, [question.id])
 
   const handleToggleImportant = () => {
     onToggleImportant(question.id)
+  }
+
+  const handleToggleBookmark = () => {
+    if (isBookmarked) {
+      bookmarkService.removeBookmark(question.id)
+    } else {
+      bookmarkService.addBookmark(question)
+    }
+    setIsBookmarked(!isBookmarked)
   }
 
   const handleSolution = async () => {
@@ -83,16 +105,21 @@ export const QuestionCard = ({ question, onToggleImportant }) => {
           </div>
         </div>
 
-        <button
-          onClick={handleToggleImportant}
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        >
-          {question.isImportant ? (
-            <StarIconSolid className="w-5 h-5 text-yellow-500" />
-          ) : (
-            <StarIcon className="w-5 h-5 text-gray-400" />
-          )}
-        </button>
+        <div className="flex items-center space-x-1">
+          <button
+            onClick={handleToggleBookmark}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            title="Bookmark question"
+          >
+            {isBookmarked ? (
+              <BookmarkIconSolid className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            ) : (
+              <BookmarkIcon className="w-5 h-5 text-gray-400" />
+            )}
+          </button>
+
+  
+        </div>
       </div>
 
       {/* Question Content */}

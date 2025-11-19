@@ -4,8 +4,8 @@ export class GeminiService {
   private ai: GoogleGenAI | null = null
   private requestCount = 0
   private lastRequestTime = 0
-  private readonly MAX_REQUESTS_PER_MINUTE = 15
-  private readonly MIN_REQUEST_INTERVAL = 4000 // 4 seconds between requests
+  private readonly MAX_REQUESTS_PER_MINUTE = 10 // Reduced from 15
+  private readonly MIN_REQUEST_INTERVAL = 6000 // Increased from 4000ms to 6 seconds
 
   constructor() {
     this.initializeAPI()
@@ -46,7 +46,7 @@ export class GeminiService {
         await this.waitForRateLimit()
 
         const result = await this.ai.models.generateContent({
-          model: "gemini-2.0-flash-001",
+          model: "gemini-2.5-flash",
           contents: prompt,
         })
 
@@ -54,23 +54,22 @@ export class GeminiService {
       } catch (error: any) {
         console.error(`[v0] API request attempt ${attempt} failed:`, error)
 
-        if (error.status === 429 || error.message?.includes("429")) {
-          const waitTime = Math.pow(2, attempt) * 2000 // Exponential backoff: 2s, 4s, 8s
+        if (error.status === 429 || error.message?.includes("429") || error.message?.includes("quota")) {
+          const waitTime = Math.pow(3, attempt) * 10000
           console.log(`[v0] Rate limited. Waiting ${waitTime}ms before retry ${attempt}/${maxRetries}`)
 
           if (attempt < maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, waitTime))
             continue
           } else {
-            // Return fallback content instead of throwing error
             console.log(`[v0] Max retries reached. Using fallback content.`)
             return this.getFallbackContent(prompt)
           }
         } else {
-          // For non-rate-limit errors, try once more or return fallback
           if (attempt === maxRetries) {
             return this.getFallbackContent(prompt)
           }
+          await new Promise((resolve) => setTimeout(resolve, 2000))
         }
       }
     }
@@ -177,7 +176,6 @@ FRONT: Best Practices | BACK: Proven strategies and recommended approaches for s
   - Review strategies and techniques`
     }
 
-    // Default comprehensive summary
     return `This comprehensive summary covers the essential aspects of the subject matter, focusing on key concepts, practical applications, and important methodologies.
 
 **Main Concepts:**
@@ -238,12 +236,10 @@ Focus on ${subject}-specific terminology and concepts. Make it educational and e
       try {
         return JSON.parse(resultText)
       } catch {
-        // Parse fallback JSON if it's a string
         return JSON.parse(this.getFallbackContent(prompt))
       }
     } catch (error) {
       console.error("Error generating visual summary:", error)
-      // Return parsed fallback content
       return JSON.parse(this.getFallbackContent(prompt))
     }
   }
@@ -366,7 +362,6 @@ Format your response as JSON with three arrays: "patterns", "insights", and "tip
       }
     } catch (error) {
       console.error("Error analyzing questions:", error)
-      // Return fallback analysis
       return {
         patterns: [
           "Questions focus on fundamental concepts and practical applications",
@@ -388,11 +383,11 @@ Format your response as JSON with three arrays: "patterns", "insights", and "tip
   }
 
   public async generateText(prompt: string): Promise<string> {
-    return await this["makeAPIRequest"](prompt)
+    return await this.makeAPIRequest(prompt)
   }
 
   public async generateJSON(prompt: string): Promise<any> {
-    const txt = await this["makeAPIRequest"](prompt)
+    const txt = await this.makeAPIRequest(prompt)
     const tryParse = (s: string) => {
       try {
         return JSON.parse(s)
@@ -401,11 +396,9 @@ Format your response as JSON with three arrays: "patterns", "insights", and "tip
       }
     }
 
-    // 1) Direct parse
     let parsed = tryParse(txt)
     if (parsed) return parsed
 
-    // 2) Strip code fences \`\`\`json ... \`\`\`
     const fenced = txt
       .replace(/```json([\s\S]*?)```/gi, "$1")
       .replace(/```([\s\S]*?)```/g, "$1")
@@ -413,7 +406,6 @@ Format your response as JSON with three arrays: "patterns", "insights", and "tip
     parsed = tryParse(fenced)
     if (parsed) return parsed
 
-    // 3) Extract first JSON array or object slice
     const arrayStart = fenced.indexOf("[")
     const arrayEnd = fenced.lastIndexOf("]")
     if (arrayStart !== -1 && arrayEnd !== -1 && arrayEnd > arrayStart) {
@@ -430,7 +422,6 @@ Format your response as JSON with three arrays: "patterns", "insights", and "tip
       if (parsed) return parsed
     }
 
-    // 4) Give up
     return null
   }
 }

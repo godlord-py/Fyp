@@ -861,9 +861,7 @@ A: Allocate time based on topic difficulty and your current understanding level.
                 Smart Features
               </h4>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
-                <li>• AI analyzes {questions.length} real questions</li>
                 <li>• 5 different summary formats</li>
-                <li>• {geminiService.isConfigured() ? "✅ Enhanced AI (Gemini)" : "⚠️ Basic AI mode"}</li>
                 <li>• Personalized difficulty analysis</li>
                 <li>• Study progress tracking</li>
                 <li>• Export to multiple formats</li>

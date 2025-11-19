@@ -1,14 +1,22 @@
 "use client"
 
 import { useState } from "react"
+import { TestModeSelector } from "../../components/TestModeSelector"
 import { MockTestGenerator } from "./MockTestGenerator"
+import { PaperTestGenerator } from "./PaperTestGenerator"
 import { MockTestTaking } from "./MockTestTaking"
 import { TestResults } from "../../components/TestResults"
 import { createQuestion, createTestConfig } from "../../types/index"
 
 export const MockTestSystem = () => {
-  const [testState, setTestState] = useState("generator")
+  const [testState, setTestState] = useState("modeSelector") // Added initial mode selector state
+  const [testMode, setTestMode] = useState(null)
   const [currentTest, setCurrentTest] = useState(null)
+
+  const handleModeSelect = (mode) => {
+    setTestMode(mode)
+    setTestState("generator")
+  }
 
   const handleStartTest = (questions, config) => {
     const formattedQuestions = questions.map((q) => createQuestion(q))
@@ -27,7 +35,7 @@ export const MockTestSystem = () => {
         ...currentTest,
         answers,
         timeSpent,
-        grading, // { graded: GradedAnswer[], summary: { correct, total, percentage } }
+        grading,
       })
       setTestState("results")
     }
@@ -39,17 +47,23 @@ export const MockTestSystem = () => {
 
   const handleBackToGenerator = () => {
     setCurrentTest(null)
-    setTestState("generator")
+    setTestMode(null)
+    setTestState("modeSelector")
   }
 
   const handleExitTest = () => {
     setCurrentTest(null)
-    setTestState("generator")
+    setTestMode(null)
+    setTestState("modeSelector")
   }
 
   return (
     <div>
-      {testState === "generator" && <MockTestGenerator onStartTest={handleStartTest} />}
+      {testState === "modeSelector" && <TestModeSelector onSelectMode={handleModeSelect} />}
+
+      {testState === "generator" && testMode === "random" && <MockTestGenerator onStartTest={handleStartTest} />}
+
+      {testState === "generator" && testMode === "paper" && <PaperTestGenerator onStartTest={handleStartTest} />}
 
       {testState === "taking" && currentTest && (
         <MockTestTaking
